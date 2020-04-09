@@ -23,7 +23,7 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <SocketProvider path='/testing'>
+      <SocketProvider path='/pointy/'>
       <BrowserRouter>
         <AppProvider value={appContext}>
           <AppStyled>

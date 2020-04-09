@@ -40,13 +40,14 @@ class WebSocketService {
   }
 
   connect(url) {
+    this.reconnectAttempts = this.reconnectAttempts + 1;
     console.log("attempting reoconnect: ", this.reconnectAttempts);
     this.url = url;
-    this.reconnectAttempts = this.reconnectAttempts + 1;
     this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
-      console.log("WebSocket open");
+      console.log("WebSocket open")
+      this.reconnectAttempts = 0;;
       return "connected";
     };
 
@@ -60,7 +61,7 @@ class WebSocketService {
 
     this.socket.onclose = () => {
       console.log("WebSocket closed. Attempting to reconnect.");
-      if (this.reconnectAttempts <= config.MAX_RECONNECT_ATTEMPTS) {
+      if (this.reconnectAttempts < config.MAX_RECONNECT_ATTEMPTS) {
         let timeout = setTimeout(() => {
           this.connect(this.url);
         }, config.RECONNECT_ATTEMPT_INVERVAL);
