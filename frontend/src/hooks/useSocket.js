@@ -1,37 +1,36 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useState } from "react";
 import SocketContext from '../context/socketContext';
 
-const useSocket = (eventKey, callback) => {
+const useSocket = () => {
     const socket = useContext(SocketContext);
-    const callbackRef = useRef(callback);
-
-    callbackRef.current = callback;
-
-    const socketHandlerRef = useRef(function () {
-        if (callbackRef.current) {
-            callbackRef.current.apply(this, arguments);
-        }
-    });
-
-    const subscribe = () => {
-        if (eventKey) {
-            socket.on(eventKey, socketHandlerRef.current);
-        }
-    };
-
-    const unsubscribe = () => {
-        if (eventKey) {
-            socket.removeListener(eventKey, socketHandlerRef.current);
-        }
-    };
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        subscribe();
+        setConnected(socket && socket.socket.readyState === window.WebSocket.OPEN);
+    }, [socket])
 
-        return unsubscribe;
-    }, [eventKey]);
+    const publish = (eventName, data) => {
+        if (connected) socket.publish(eventName, data)
+    }
 
-    return { socket, unsubscribe, subscribe };
+    const subscribe = (eventName, callback) => {
+        if (connected) socket.subscribe(eventName, callback);
+    }
+    
+//   subscribe(eventName, callback) {
+//     this.callbacks = {
+//       ...this.callbacks,
+//       [eventName]: callback,
+//     };
+//   }
+
+//   publish(eventName, data) {
+//     const msg = { type: eventName, ...data };
+//     this.socket.send(JSON.stringify(msg));
+//   }
+
+
+    return { publish, subscribe }
 };
 
 export default useSocket;

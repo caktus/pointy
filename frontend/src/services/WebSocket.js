@@ -47,8 +47,8 @@ class WebSocketService {
 
     this.socket.onopen = () => {
       console.log("WebSocket open")
-      this.reconnectAttempts = 0;;
-      return "connected";
+      this.reconnectAttempts = 0;
+      return true
     };
 
     this.socket.onmessage = (e) => {
@@ -87,6 +87,7 @@ class WebSocketService {
   }
 
   _handleNewMessage(data) {
+      console.log('new message recieved: ', data)
     const { event, body } = data.event;
     switch (event) {
       case "user_joined":
