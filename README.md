@@ -1,4 +1,4 @@
-# Pointy, by Caktus Gro👈up 🌵
+# Pointy, by Caktus Group 🌵
 # 👆👉👇👈
 
 ## A pointing tool.
