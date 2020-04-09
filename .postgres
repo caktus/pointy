@@ -1,0 +1,5 @@
+POSTGRES_DB=learningpower
+POSTGRES_USER=learningpower_user
+POSTGRES_HOST_AUTH_METHOD=trust
+DATABASE_URL=postgres://learningpower_user@db/learningpower
+DJANGO_MANAGEPY_MIGRATE=on
