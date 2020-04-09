@@ -12,7 +12,7 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
-    "reaktus": "^0.1.4",
+    "reaktus": "^0.1.6",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.1.0"
   },

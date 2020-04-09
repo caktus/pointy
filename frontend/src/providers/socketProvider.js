@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import io from "socket.io-client";
+import * as config from '../config/config';
 import SocketContext from "../context/socketContext";
 
 
@@ -11,7 +12,11 @@ export const SocketProvider = ({ url, opts, children }) => {
   }
 
   if (!socketRef.current) {
-    socketRef.current = io(url, opts || {});
+    const options = {
+      ...config.BASE_SOCKET_OPTIONS,
+      ...opts
+    };
+    socketRef.current = io(url, options);
   }
 
   return (
