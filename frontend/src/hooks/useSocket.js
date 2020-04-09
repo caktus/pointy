@@ -1,37 +1,19 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useState } from "react";
 import SocketContext from '../context/socketContext';
 
-const useSocket = (eventKey, callback) => {
+const useSocket = () => {
     const socket = useContext(SocketContext);
-    const callbackRef = useRef(callback);
-
-    callbackRef.current = callback;
-
-    const socketHandlerRef = useRef(function () {
-        if (callbackRef.current) {
-            callbackRef.current.apply(this, arguments);
-        }
-    });
-
-    const subscribe = () => {
-        if (eventKey) {
-            socket.on(eventKey, socketHandlerRef.current);
-        }
-    };
-
-    const unsubscribe = () => {
-        if (eventKey) {
-            socket.removeListener(eventKey, socketHandlerRef.current);
-        }
-    };
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        subscribe();
+        setConnected(socket.waitForSocketConnection());
+    }, [socket])
 
-        return unsubscribe;
-    }, [eventKey]);
+    const publish = (eventName, data) => socket.publish(eventName, data);
 
-    return { socket, unsubscribe, subscribe };
+    const subscribe = (eventName, callback) => socket.subscribe(eventName, callback);
+
+    return { connected, publish, subscribe };
 };
 
 export default useSocket;

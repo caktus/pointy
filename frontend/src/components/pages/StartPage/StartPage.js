@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StartPageStyled,
   StartPageUsername,
@@ -13,6 +13,9 @@ import {
 import { Link, useHistory } from 'react-router-dom';
 
 import { SPRING } from '../../../styles/animations';
+
+// Hooks
+import useSocket from '../../../hooks/useSocket';
 
 // TODO: REMOVE
 const rooms = [
@@ -29,7 +32,16 @@ const rooms = [
 const StartPage = props => {
   const history = useHistory();
   const [username, setUsername] = useState('');
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({});
+
+  const { connected, publish, subscribe } = useSocket();
+
+  useEffect(() => {
+    if (connected) {
+      console.log('connected!!1')
+      publish("test_event", { message: "stuff" });
+    }
+  }, [connected])
   
   const handleCreateNewSession = () => {
     history.push('/new')
