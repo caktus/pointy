@@ -125,9 +125,11 @@ STATIC_URL = '/static/'
 # Channels
 ASGI_APPLICATION = 'pointy.routing.application'
 
+REDIS_HOST = "127.0.0.1"
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [("127.0.0.1", 6379)]}
+        "CONFIG": {"hosts": [(REDIS_HOST, 6379)]}
     }
 }
