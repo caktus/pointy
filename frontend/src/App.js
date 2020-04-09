@@ -2,9 +2,6 @@ import React from 'react';
 import GlobalStyle from './styles/GlobalStyle';
 import { AppStyled, AppWrapperStyled } from "./App.styled";
 
-// Config
-import * as config from './config/config';
-
 // Rotuer
 import { BrowserRouter, Switch,  Route } from "react-router-dom";
 
@@ -26,7 +23,7 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      {/* <SocketProvider url={config.SOCKET_URL} opts={config.SOCKET_OPTIONS}> */}
+      <SocketProvider path='/testing'>
       <BrowserRouter>
         <AppProvider value={appContext}>
           <AppStyled>
@@ -47,7 +44,7 @@ function App() {
           </AppStyled>
         </AppProvider>
       </BrowserRouter>
-      {/* </SocketProvider> */}
+      </SocketProvider>
     </>
   );
 }

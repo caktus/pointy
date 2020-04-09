@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
-import io from "socket.io-client";
-import * as config from '../config/config';
 import SocketContext from "../context/socketContext";
+import WebSocketConnection from '../services/WebSocket';
+import * as config from '../services/config';
 
 
-export const SocketProvider = ({ url, opts, children }) => {
+export const SocketProvider = ({ path, opts, children }) => {
   const socketRef = useRef();
   
   if (!window) {
@@ -12,11 +12,10 @@ export const SocketProvider = ({ url, opts, children }) => {
   }
 
   if (!socketRef.current) {
-    const options = {
-      ...config.BASE_SOCKET_OPTIONS,
-      ...opts
-    };
-    socketRef.current = io(url, options);
+    const rootUrl = config.BASE_SOCKET_URL;
+    const url = rootUrl + path;
+    socketRef.current = WebSocketConnection;
+    socketRef.current.connect(url);
   }
 
   return (

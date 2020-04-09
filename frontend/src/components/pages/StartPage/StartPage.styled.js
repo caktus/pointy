@@ -18,8 +18,17 @@ export const StartPageUsername = styled.div`
 `;
 
 export const InputStyled = styled(Input)`
-    font-size: 2rem;
-    background: pink;
+    & > input {
+        font-size: 2rem;
+        width: 24rem;
+        height: 3rem;
+        font-family: 'Inconsolata', monospace;
+    }
+
+    & > label {
+        font-size: 1.5rem;
+        font-family: 'Inconsolata', monospace;
+    }
 `;
 
 export const StartPageActionCards = styled.div`

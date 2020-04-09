@@ -29,9 +29,20 @@ const rooms = [
 const StartPage = props => {
   const history = useHistory();
   const [username, setUsername] = useState('');
+  const [errors, setErrors] = useState({})
   
   const handleCreateNewSession = () => {
     history.push('/new')
+  }
+
+  const handleOptionSelected = session => {
+    if (!username) {
+      console.log('setting username errors')
+      setErrors({
+        ...errors,
+        username: ["You must provide a username"]
+      })
+    }
   }
 
   return (
@@ -39,7 +50,14 @@ const StartPage = props => {
       <h1>Welcome to Pointy!</h1>
 
       <StartPageUsername>
-        <InputStyled type='text' label="username" value={username} onChange={e => setUsername(e.target.value)}/>
+        <InputStyled
+          type="text"
+          label="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          maxLength="23"
+          errors={errors.username || []}
+        />
       </StartPageUsername>
 
       <StartPageActionCards>
@@ -48,13 +66,15 @@ const StartPage = props => {
           <StartPageRoomsListStyled>
             {rooms.map((room) => (
               <StartPageRoomStyled key={room.room} layoutTransition={SPRING}>
-                <Link to={`/${room.room}`}>{room.name}</Link>
+                <p onClick={() => handleOptionSelected(room.room)}>
+                  {room.name}
+                </p>
               </StartPageRoomStyled>
             ))}
           </StartPageRoomsListStyled>
         </CardStyled>
 
-        <CardStyled onClick={handleCreateNewSession}>
+        <CardStyled onClick={() => handleOptionSelected()}>
           <CreateSessionCardStyled>
             <h3>Create a new session</h3>
             <p>(You'll be the administrator)</p>
