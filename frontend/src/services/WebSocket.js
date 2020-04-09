@@ -1,27 +1,5 @@
 import * as config from './config';
 
-/**
- * Create an instance of a websocket connection
- * Add it to conext.
- * 
- * In components, const { subscribe, publish } = useSocket('/path') [which just does socketInstance('/path')]
- * subscribe('', data => { the call back });
- * publish('', data) where data is {}
- * 
- * 
- * so:
- * function useSocket(path) {
- *  
- *  subscribe(eventName, callback()) {
- *    socketInstance.subscribe(eventName, callback())
- *  }
- *  
- *  publish(eventName, data) {
- *  
- *  }
- * }
- */
-
 class WebSocketService {
   static instance = null;
   callbacks = {};
@@ -46,9 +24,9 @@ class WebSocketService {
     this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
-      console.log("WebSocket open")
+      console.log("WebSocket open");
       this.reconnectAttempts = 0;
-      return true
+      return true;
     };
 
     this.socket.onmessage = (e) => {
@@ -82,22 +60,41 @@ class WebSocketService {
   }
 
   publish(eventName, data) {
+    console.log('publishing: ', eventName, data)
     const msg = { type: eventName, ...data };
     this.socket.send(JSON.stringify(msg));
   }
 
   _handleNewMessage(data) {
-      console.log('new message recieved: ', data)
-    const { event, body } = data.event;
-    switch (event) {
-      case "user_joined":
-        this.callbacks["user_joined"](body);
-        break;
+    console.log("new message recieved: ", data);
+    // const { type, body } = data.event;
+    // switch () {
+    //   case "user_joined":
+    //     this.callbacks["user_joined"](data);
+    //     break;
 
-      default:
-        console.log(`WebSocket instance recieved unhandled event "${event}"`);
-        break;
-    }
+    //   default:
+    //     console.log(`WebSocket instance recieved unhandled event "${event}"`);
+    //     break;
+    // }
+  }
+
+  state() {
+    return this.socket.readyState;
+  }
+
+  waitForSocketConnection() {
+    const socket = this.socket;
+    const recursion = this.waitForSocketConnection;
+    return setTimeout(function () {
+      if (socket.readyState === WebSocket.OPEN) {
+        console.log("Connection is made");
+        return true;
+      } else {
+        console.log("wait for connection...");
+        recursion();
+      }
+    }, 1);
   }
 }
 
@@ -105,110 +102,3 @@ class WebSocketService {
 const WebSocketConnection = WebSocketService.getInstance();
 
 export default WebSocketConnection;
-
-
-// class WebSocketService {
-//   static instance = null;
-//   callbacks = {};
-
-//   static getInstance() {
-//     if (!WebSocketService.instance) {
-//       WebSocketService.instance = new WebSocketService();
-//     }
-//     return WebSocketService.instance;
-//   }
-
-//   constructor() {
-//     this.socket = null;
-//     this.path = null;
-//   }
-
-//   connect(path) {
-//     this.path = path
-//     const rootUrl = config.BASE_SOCKET_URL;
-//     const url = rootUrl + path;
-//     this.socket = new WebSocket(url);
-    // this.socket.onopen = () => {
-    //   console.log("WebSocket open");
-    // };
-    // this.socket.onmessage = (e) => {
-    //   this.socketNewMessage(e.data);
-    // };
-
-    // this.socket.onerror = (e) => {
-    //   console.log(e.message);
-    // };
-    // this.socket.onclose = () => {
-    //   console.log("WebSocket closed. Attempting to reconnect.");
-    //   this.connect();
-    // };
-//   }
-
-//   socketNewMessage(data) {
-//     const parsedData = JSON.parse(data);
-//     const command = parsedData.command;
-//     if (Object.keys(this.callbacks).length === 0) {
-//       return;
-//     }
-//     if (command === "messages") {
-//       this.callbacks[command](parsedData.messages);
-//     }
-//     if (command === "new_message") {
-//       this.callbacks[command](parsedData.message);
-//     }
-//   }
-
-//   initChatUser(username) {
-//     this.sendMessage({ command: "init_chat", username: username });
-//   }
-
-//   fetchMessages(username) {
-//     this.sendMessage({ command: "fetch_messages", username: username });
-//   }
-
-//   newChatMessage(message) {
-//     this.sendMessage({
-//       command: "new_message",
-//       from: message.from,
-//       text: message.text,
-//     });
-//   }
-
-//   addCallbacks(messagesCallback, newMessageCallback) {
-//     this.callbacks["messages"] = messagesCallback;
-//     this.callbacks["new_message"] = newMessageCallback;
-//   }
-
-//   sendMessage(data) {
-//     try {
-//       this.socket.send(JSON.stringify({ ...data }));
-//     } catch (err) {
-//       console.log(err.message);
-//     }
-//   }
-
-//   state() {
-//     return this.socket.readyState;
-//   }
-
-//   waitForSocketConnection(callback) {
-//     const socket = this.socket;
-//     const recursion = this.waitForSocketConnection;
-//     setTimeout(function () {
-//       if (socket.readyState === 1) {
-//         console.log("Connection is made");
-//         if (callback != null) {
-//           callback();
-//         }
-//         return;
-//       } else {
-//         console.log("wait for connection...");
-//         recursion(callback);
-//       }
-//     }, 1);
-//   }
-// }
-
-// const WebSocketInstance = WebSocketService.getInstance();
-
-// export default WebSocketInstance;

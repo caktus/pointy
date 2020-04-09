@@ -6,31 +6,14 @@ const useSocket = () => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        setConnected(socket && socket.socket.readyState === window.WebSocket.OPEN);
+        setConnected(socket.waitForSocketConnection());
     }, [socket])
 
-    const publish = (eventName, data) => {
-        if (connected) socket.publish(eventName, data)
-    }
+    const publish = (eventName, data) => socket.publish(eventName, data);
 
-    const subscribe = (eventName, callback) => {
-        if (connected) socket.subscribe(eventName, callback);
-    }
-    
-//   subscribe(eventName, callback) {
-//     this.callbacks = {
-//       ...this.callbacks,
-//       [eventName]: callback,
-//     };
-//   }
+    const subscribe = (eventName, callback) => socket.subscribe(eventName, callback);
 
-//   publish(eventName, data) {
-//     const msg = { type: eventName, ...data };
-//     this.socket.send(JSON.stringify(msg));
-//   }
-
-
-    return { publish, subscribe }
+    return { connected, publish, subscribe };
 };
 
 export default useSocket;

@@ -18,6 +18,10 @@ export const SocketProvider = ({ path, opts, children }) => {
     socketRef.current.connect(url);
   }
 
+  if (!socketRef.current) {
+    return <h1>Connecting...</h1>
+  }
+
   return (
     <SocketContext.Provider value={socketRef.current}>
       {children}

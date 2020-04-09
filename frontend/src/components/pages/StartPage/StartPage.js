@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StartPageStyled,
   StartPageUsername,
@@ -32,13 +32,16 @@ const rooms = [
 const StartPage = props => {
   const history = useHistory();
   const [username, setUsername] = useState('');
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({});
 
-  const socket = useSocket();
+  const { connected, publish, subscribe } = useSocket();
 
   useEffect(() => {
-    if (socket) socket.publish("test_event", { things: "stuff" });
-  }, [socket])
+    if (connected) {
+      console.log('connected!!1')
+      publish("test_event", { message: "stuff" });
+    }
+  }, [connected])
   
   const handleCreateNewSession = () => {
     history.push('/new')

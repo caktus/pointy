@@ -24,26 +24,26 @@ function App() {
     <>
       <GlobalStyle />
       <SocketProvider path='/pointy/'>
-      <BrowserRouter>
-        <AppProvider value={appContext}>
-          <AppStyled>
-            <AppWrapperStyled>
-              <GlobalHeader />
-              <Switch>
-                <Route exact path="/">
-                  <StartPage />
-                </Route>
-                <Route path="/new">
-                  <NewRoomPage />
-                </Route>
-                <Route path="/:room">
-                  <RoomPage />
-                </Route>
-              </Switch>
-            </AppWrapperStyled>
-          </AppStyled>
-        </AppProvider>
-      </BrowserRouter>
+        <BrowserRouter>
+          <AppProvider value={appContext}>
+            <AppStyled>
+              <AppWrapperStyled>
+                <GlobalHeader />
+                <Switch>
+                  <Route exact path="/">
+                    <StartPage />
+                  </Route>
+                  <Route path="/new">
+                    <NewRoomPage />
+                  </Route>
+                  <Route path="/:room">
+                    <RoomPage />
+                  </Route>
+                </Switch>
+              </AppWrapperStyled>
+            </AppStyled>
+          </AppProvider>
+        </BrowserRouter>
       </SocketProvider>
     </>
   );
