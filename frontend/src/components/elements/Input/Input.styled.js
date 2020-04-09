@@ -75,7 +75,7 @@ export const InputStyled = styled.input`
 
 export const ErrorsStyled = styled(motion.div)`
   margin: 0;
-  margin-top: 2rem;
+  /* margin-top: 2rem; */
 `;
 
 export const ErrorStyled = styled.p`

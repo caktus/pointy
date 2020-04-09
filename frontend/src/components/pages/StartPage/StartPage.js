@@ -8,6 +8,7 @@ import {
   StartPageRoomStyled,
   CreateSessionCardStyled,
 } from "./StartPage.styled";
+import { motion } from "framer-motion";
 import Input from '../../elements/Input/Input';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -80,7 +81,7 @@ const StartPage = props => {
 
       <StartPageActionCards>
         <CardStyled>
-          <h3>Join a session</h3>
+          <motion.h3 layoutTransition={SPRING}>Join a session</motion.h3>
           <StartPageRoomsListStyled>
             {rooms.map((room) => (
               <StartPageRoomStyled key={room.room} layoutTransition={SPRING}>
@@ -94,8 +95,8 @@ const StartPage = props => {
 
         <CardStyled onClick={() => handleOptionSelected()}>
           <CreateSessionCardStyled>
-            <h3>Create a new session</h3>
-            <p>(You'll be the administrator)</p>
+            <motion.h3 layoutTransition={SPRING}>Create a new session</motion.h3>
+            <motion.p layoutTransition={SPRING}>(You'll be the administrator)</motion.p>
           </CreateSessionCardStyled>
         </CardStyled>
       </StartPageActionCards>
