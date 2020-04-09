@@ -2,13 +2,19 @@ import React from 'react';
 import { RoomPageStyled } from './RoomPage.styled';
 
 // Route
-import { useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
+import PointySpinner from '../../elements/PointySpinner/PointySpinner';
 
 const RoomPage = props => {
-    let { room } = useParams()
+  let { room } = useParams()
+  const { state: routerState } = useLocation(); 
+
+
+
   return (
     <RoomPageStyled>
-      <p>Room is {room}</p>
+      <p>Room is {room} and username is {routerState.username}</p>
+      <PointySpinner large/>
     </RoomPageStyled>
   );
 }

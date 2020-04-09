@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import {
   StartPageStyled,
   StartPageUsername,
-  InputStyled,
   StartPageActionCards,
   CardStyled,
   StartPageRoomsListStyled,
   StartPageRoomStyled,
   CreateSessionCardStyled,
 } from "./StartPage.styled";
-
+import Input from '../../elements/Input/Input';
 import { Link, useHistory } from 'react-router-dom';
 
 import { SPRING } from '../../../styles/animations';
@@ -42,19 +41,26 @@ const StartPage = props => {
       publish("test_event", { message: "stuff" });
     }
   }, [connected])
+
+  const handleSetUsername = e => {
+    setErrors({
+      ...errors,
+      username: null
+    });
+    setUsername(e.target.value);
+  }
   
   const handleCreateNewSession = () => {
-    history.push('/new')
+    history.push("/new", { username });
   }
 
   const handleOptionSelected = session => {
     if (!username) {
-      console.log('setting username errors')
-      setErrors({
-        ...errors,
-        username: ["You must provide a username"]
-      })
-    }
+      return setErrors({ ...errors, username: "You must provide a username"})
+    } 
+
+    if (!session) return handleCreateNewSession();
+    history.push(`/${session}`, { username });
   }
 
   return (
@@ -62,11 +68,11 @@ const StartPage = props => {
       <h1>Welcome to Pointy!</h1>
 
       <StartPageUsername>
-        <InputStyled
+        <Input
           type="text"
           label="username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={handleSetUsername}
           maxLength="23"
           errors={errors.username || []}
         />
