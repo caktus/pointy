@@ -7,15 +7,26 @@ import {
   ButtonStyled
 } from "./NewRoomPage.styled";
 
+import { useHistory } from "react-router";
+
 import Select from "../../elements/Select/Select";
 
 // hooks
 import { EVENT_TYPES } from "../../../services/WebSocket";
 
 const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
+  const history = useHistory();
   const [name, setName] = useState('');
   const [template, setTemplate] = useState('');
   const [errors, setErrors] = useState({});
+  const [waitingForRoom, setWaitingForRoom] = useState(false);
+
+  useEffect(() => {
+    const newRoom = rooms.find(rm => rm.name === name);
+    if (waitingForRoom && newRoom) {
+      history.push(`'/${newRoom.session_id}/'`);
+    }
+  }, [rooms]);
 
   const handleInput = e => {
     setErrors({
@@ -55,6 +66,7 @@ const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
 
 
   const createSession = () => {
+    setWaitingForRoom(true);
     publish(EVENT_TYPES.room_created, {
       room_name: name,
       session_id: _createSessionIdFromName(),

@@ -71,7 +71,7 @@ class WebSocketService {
   }
 
   _fallbackCallback(eventName) {
-    console.log(`Received "${eventName}" event, but no callback was provided`)
+    console.log(`Received "${eventName}" event, but no callback was registered for this event`)
   }
 
   close() {
@@ -88,11 +88,12 @@ class WebSocketService {
 
   publish(eventName, data) {
     console.log('publishing: ', eventName, data)
-    const msg = { type: eventName, ...data };
+    const msg = { type: eventName, message: data };
     this.socket.send(JSON.stringify(msg));
   }
 
   _handleNewMessage(data) {
+    console.log('message recieved with: ', data)
     const { type, message } = JSON.parse(data);
     if (!this.callbacks[EVENT_TYPES[type]]) {
       console.log(`WebSocket instance recieved unhandled event type "${type}"`);
@@ -108,16 +109,17 @@ class WebSocketService {
   waitForSocketConnection(callback) {
     const socket = this.socket;
     const recursion = this.waitForSocketConnection;
+    this.reconnectAttempts++;
     setTimeout(function () {
       if (socket.readyState === WebSocket.OPEN) {
         console.log("Connection is made");
         callback()
         return
-      } else {
-        console.log("wait for connection...");
-        recursion(callback);
-      }
-    }, 1);
+      } else if (this.reconnectAttempts < 1000) {
+          console.log("wait for connection...");
+          recursion(callback);
+        }
+    }, 100);
   }
 }
 

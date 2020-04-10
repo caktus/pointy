@@ -10,7 +10,6 @@ import ConnectedRoute from "./services/ConnectedRoute";
 import GlobalHeader from "./components/elements/GlobalHeader/GlobalHeader";
 
 // Pages
-import NewRoomPage from './components/pages/NewRoomPage/NewRoomPage';
 import AsyncStartPage from "./components/pages/StartPage/AsyncStartPage";
 import AsyncRoomPage from './components/pages/RoomPage/AsyncRoomPage';
 
