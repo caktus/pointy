@@ -1,11 +1,21 @@
 import * as config from './config';
 
+export const EVENT_TYPES = {
+  REQUEST_POINTY_STATE: 'request_pointy_state',
+  POINTY_STATE: 'pointy_state',
+  ROOM_CREATED: 'room_created',
+
+  ROOM_UPDATE: 'room_update',
+  JOIN_ROOM: 'join_room',
+}
+
 class WebSocketService {
   static instance = null;
   callbacks = {};
   reconnectAttempts = 0;
 
   static getInstance() {
+    console.log('------>>>> getInstance()')
     if (!WebSocketService.instance) {
       WebSocketService.instance = new WebSocketService();
     }
@@ -15,15 +25,24 @@ class WebSocketService {
   constructor() {
     this.url = "";
     this.socket = null;
+    this.connect = this.connect.bind(this);
+    this._fallbackCallback = this._fallbackCallback.bind(this);
+    this.close = this.close.bind(this);
+    this.subscribe = this.subscribe.bind(this);
+    this.publish = this.publish.bind(this);
+    this._handleNewMessage = this._handleNewMessage.bind(this);
+    this.getState = this.getState.bind(this);
+    this.waitForSocketConnection = this.waitForSocketConnection.bind(this);
   }
 
   connect(url) {
+    console.log("------>>>> connect()");
     this.reconnectAttempts = this.reconnectAttempts + 1;
     this.url = url;
     this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
-      console.log("WebSocket open");
+      console.log("WebSocket open at: ",  url);
       this.reconnectAttempts = 0;
       return true;
     };
@@ -51,10 +70,19 @@ class WebSocketService {
     };
   }
 
+  _fallbackCallback(eventName) {
+    console.log(`Received "${eventName}" event, but no callback was provided`)
+  }
+
+  close() {
+    this.socket.close(1000, "It's over. I just...can't anymore...")
+  }
+
   subscribe(eventName, callback) {
+    const fallback = () => this._fallbackCallback(eventName)
     this.callbacks = {
       ...this.callbacks,
-      [eventName]: callback,
+      [eventName]: callback || fallback
     };
   }
 
@@ -66,35 +94,31 @@ class WebSocketService {
 
   _handleNewMessage(data) {
     console.log("new message recieved: ", data);
-    // const { type, body } = data.event;
-    // switch () {
-    //   case "user_joined":
-    //     this.callbacks["user_joined"](data);
-    //     break;
-
-    //   default:
-    //     console.log(`WebSocket instance recieved unhandled event "${event}"`);
-    //     break;
-    // }
+    const { type, message } = data;
+    if (!this.callbacks[EVENT_TYPES.REQUEST_POINTY_STATE]) {
+      console.log(`WebSocket instance recieved unhandled event type "${type}"`);
+    } else {
+       this.callbacks[EVENT_TYPES.REQUEST_POINTY_STATE](message);
+    }
   }
 
   getState() {
     return this.socket.readyState;
   }
 
-  waitForSocketConnection() {
+  waitForSocketConnection(callback) {
     const socket = this.socket;
     const recursion = this.waitForSocketConnection;
-    let timeout = setTimeout(function () {
+    setTimeout(function () {
       if (socket.readyState === WebSocket.OPEN) {
         console.log("Connection is made");
+        callback()
         return
       } else {
         console.log("wait for connection...");
-        recursion();
+        recursion(callback);
       }
     }, 1);
-    return true
   }
 }
 

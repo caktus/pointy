@@ -1,3 +1,5 @@
+import json
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 
@@ -25,7 +27,7 @@ class PointyHome(JsonWebsocketConsumer):
 
     def receive_json(self, content, **kwargs):
         if content["type"] == "request_pointy_state":
-            self.send(build_pointy_state())
+            self.send(json.dumps(build_pointy_state()))
         elif content["type"] == "room_created":
             self.create_room(content["message"])
             async_to_sync(self.channel_layer.group_send)(

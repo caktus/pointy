@@ -10,12 +10,13 @@ import {
 } from "./StartPage.styled";
 import { motion } from "framer-motion";
 import Input from '../../elements/Input/Input';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { SPRING } from '../../../styles/animations';
 
 // Hooks
-import useSocket from '../../../hooks/useSocket';
+import { useHomeSocket } from '../../../hooks/useSocket';
+import { EVENT_TYPES } from '../../../services/WebSocket';
 
 // TODO: REMOVE
 const rooms = [
@@ -29,19 +30,31 @@ const rooms = [
   },
 ];
 
-const StartPage = props => {
+const StartPage = () => {
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [errors, setErrors] = useState({});
 
-  const { connected, publish, subscribe } = useSocket();
-
+  const { publish, subscribe } = useHomeSocket();
+  /**
+   *  Subscribe to "pointy_state" updates, 
+   *  including new rooms added and current ValueTemplates
+   **/ 
   useEffect(() => {
-    if (connected) {
-      console.log('connected!!1')
-      publish("test_event", { message: "stuff" });
-    }
-  }, [connected])
+    subscribe(EVENT_TYPES.POINTY_STATE, data => {
+      console.log('pointy state!: ', data);
+    });
+  }, []);
+
+  /**
+   *  Publish "request_pointy_state" 
+   *  Effectively, "Somebody just joined and needs initial point_state"
+   **/ 
+  useEffect(() => {
+    publish(EVENT_TYPES.REQUEST_POINTY_STATE, {});
+  }, []);
+
+
 
   const handleSetUsername = e => {
     setErrors({
@@ -65,42 +78,42 @@ const StartPage = props => {
   }
 
   return (
-    <StartPageStyled>
-      <h1>Welcome to Pointy!</h1>
+      <StartPageStyled>
+        <h1>Welcome to Pointy!</h1>
 
-      <StartPageUsername>
-        <Input
-          type="text"
-          label="username"
-          value={username}
-          onChange={handleSetUsername}
-          maxLength="23"
-          errors={errors.username || []}
-        />
-      </StartPageUsername>
+        <StartPageUsername>
+          <Input
+            type="text"
+            label="username"
+            value={username}
+            onChange={handleSetUsername}
+            maxLength="23"
+            errors={errors.username || []}
+          />
+        </StartPageUsername>
 
-      <StartPageActionCards>
-        <CardStyled>
-          <motion.h3 layoutTransition={SPRING}>Join a session</motion.h3>
-          <StartPageRoomsListStyled>
-            {rooms.map((room) => (
-              <StartPageRoomStyled key={room.room} layoutTransition={SPRING}>
-                <p onClick={() => handleOptionSelected(room.room)}>
-                  {room.name}
-                </p>
-              </StartPageRoomStyled>
-            ))}
-          </StartPageRoomsListStyled>
-        </CardStyled>
+        <StartPageActionCards>
+          <CardStyled>
+            <motion.h3 layoutTransition={SPRING}>Join a session</motion.h3>
+            <StartPageRoomsListStyled>
+              {rooms.map((room) => (
+                <StartPageRoomStyled key={room.room} layoutTransition={SPRING}>
+                  <p onClick={() => handleOptionSelected(room.room)}>
+                    {room.name}
+                  </p>
+                </StartPageRoomStyled>
+              ))}
+            </StartPageRoomsListStyled>
+          </CardStyled>
 
-        <CardStyled onClick={() => handleOptionSelected()}>
-          <CreateSessionCardStyled>
-            <motion.h3 layoutTransition={SPRING}>Create a new session</motion.h3>
-            <motion.p layoutTransition={SPRING}>(You'll be the administrator)</motion.p>
-          </CreateSessionCardStyled>
-        </CardStyled>
-      </StartPageActionCards>
-    </StartPageStyled>
+          <CardStyled onClick={() => handleOptionSelected()}>
+            <CreateSessionCardStyled>
+              <motion.h3 layoutTransition={SPRING}>Create a new session</motion.h3>
+              <motion.p layoutTransition={SPRING}>(You'll be the administrator)</motion.p>
+            </CreateSessionCardStyled>
+          </CardStyled>
+        </StartPageActionCards>
+      </StartPageStyled>
   );
 }
 
