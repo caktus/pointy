@@ -18,6 +18,7 @@ import { SPRING } from '../../../styles/animations';
 // Hooks
 import { useHomeSocket } from '../../../hooks/useSocket';
 import { EVENT_TYPES } from '../../../services/WebSocket';
+import NewRoomPage from '../NewRoomPage/NewRoomPage';
 
 
 const StartPage = () => {
@@ -27,6 +28,7 @@ const StartPage = () => {
   const [rooms, setRooms] = useState([]);
   const [valueTemplates, setValueTemplates] = useState([]);
   const [errors, setErrors] = useState({});
+  const [view, setView] = useState('start');
   /**
    *  Subscribe to "pointy_state" updates, 
    *  including new rooms added and current ValueTemplates
@@ -58,7 +60,7 @@ const StartPage = () => {
   }
   
   const handleCreateNewSession = () => {
-    history.push("/new", { username, valueTemplates });
+    setView('newSession');
   }
 
   const handleOptionSelected = session => {
@@ -70,7 +72,18 @@ const StartPage = () => {
     history.push(`/${session}`, { username });
   }
 
-  return (
+  if (view === 'newSession') {
+    return (
+      <NewRoomPage
+        rooms={rooms}
+        publish={publish}
+        username={username}
+        valueTemplates={valueTemplates}
+      />
+    );
+  }
+  if (view === 'start') {
+    return (
       <StartPageStyled>
         <h1>Welcome to Pointy!</h1>
 
@@ -107,7 +120,8 @@ const StartPage = () => {
           </CardStyled>
         </StartPageActionCards>
       </StartPageStyled>
-  );
+    )
+  }
 }
 
 export default StartPage;

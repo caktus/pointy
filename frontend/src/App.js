@@ -27,9 +27,6 @@ function App() {
                 <Route exact path="/">
                   <AsyncStartPage />
                 </Route>
-                <ConnectedRoute socket="home" path="/new">
-                  <NewRoomPage />
-                </ConnectedRoute>
                 <ConnectedRoute socket="session" path="/:sessionId">
                   <AsyncRoomPage />
                 </ConnectedRoute>

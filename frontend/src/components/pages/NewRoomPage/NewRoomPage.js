@@ -7,66 +7,67 @@ import {
   ButtonStyled
 } from "./NewRoomPage.styled";
 
-// Router
-import { useLocation } from 'react-router';
 import Select from "../../elements/Select/Select";
 
 // hooks
-import { useHomeSocket } from "../../../hooks/useSocket";
 import { EVENT_TYPES } from "../../../services/WebSocket";
 
-const NewRoomPage = props => {
-  const { publish, subscribe } = useHomeSocket();
-  const { state: routerState } = useLocation();
+const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
   const [name, setName] = useState('');
   const [template, setTemplate] = useState('');
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    subscribe(EVENT_TYPES.pointy_state, message => {
-      console.log('now we are runningt his one: ', message);
-    });
-  }, []);
-
   const handleInput = e => {
     setErrors({
       ...errors,
-      sessionName: undefined
+      sessionName: []
     });
     setName(e.target.value);
   }
 
   const handleTemplateSelect = e => {
+    setErrors({
+      ...errors,
+      template: '',
+    });
     setTemplate(e.target.value)
   }
 
   const handleCreateSession = () => {
+    if (name && template) createSession();
     if (!name) {
-      return setErrors({
+      setErrors({
         ...errors,
         sessionName: "You must name your session"
       });
     }
-
     if (!template) {
-      return setErrors({
+      setErrors({
         ...errors,
         template: "Select a template",
       });
     }
-    createSession();
+  }
+
+  const _createSessionIdFromName = () => {
+    return name.toLocaleLowerCase().split(' ').join('_');
   }
 
 
   const createSession = () => {
-
+    publish(EVENT_TYPES.room_created, {
+      room_name: name,
+      session_id: _createSessionIdFromName(),
+      admin_name: username,
+      values_template_id: template
+    });
   };
 
   return (
     <NewRoomPageStyled>
       <NewRoomHeading>
         <h1>
-          Welcome, <span>{routerState.username}</span>
+          Welcome, <span>{username}</span>
         </h1>
       </NewRoomHeading>
       <NewRoomForm>
@@ -80,7 +81,7 @@ const NewRoomPage = props => {
             errors={errors.sessionName}
           />
 
-          <Select options={routerState.valueTemplates} value={template} onChange={handleTemplateSelect} error={errors.template}/>
+          <Select options={valueTemplates} value={template} onChange={handleTemplateSelect} error={errors.template}/>
 
           <ButtonStyled onClick={handleCreateSession}>
             Create session

@@ -14,6 +14,7 @@ const Select = ({ options, value, onChange, error }) => {
   return (
     <SelectWrapper>
       <SelectStyled value={value} onChange={onChange}>
+        <OptionStyled value=""></OptionStyled>
         {options.map((option) => (
           <OptionStyled key={option.id} value={option.id}>
             {option.name}
@@ -23,6 +24,7 @@ const Select = ({ options, value, onChange, error }) => {
       <AnimatePresence>
         {error && (
           <ErrorsStyled
+            key='selectErrors'
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
