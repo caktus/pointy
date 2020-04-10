@@ -29,7 +29,7 @@ class PointyHome(JsonWebsocketConsumer):
         if content["type"] == "request_pointy_state":
             self.send(json.dumps(build_pointy_state()))
         elif content["type"] == "room_created":
-            self.create_room(content["message"])
+            create_room(content["message"])
             async_to_sync(self.channel_layer.group_send)(
                 HOME_GROUP_NAME,
                 build_pointy_state()
