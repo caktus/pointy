@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { PageBaseStyled } from '../PageBase.styled';
-import { Input, Card } from "reaktus";
 import { colorBlue } from '../../../styles/colors';
+
+// lib
+import { Card } from "reaktus";
+
 
 export const StartPageStyled = styled(PageBaseStyled)`
     display: flex;
@@ -15,20 +18,7 @@ export const StartPageUsername = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-`;
-
-export const InputStyled = styled(Input)`
-    & > input {
-        font-size: 2rem;
-        width: 24rem;
-        height: 3rem;
-        font-family: 'Inconsolata', monospace;
-    }
-
-    & > label {
-        font-size: 1.5rem;
-        font-family: 'Inconsolata', monospace;
-    }
+  margin-top: 5rem;
 `;
 
 export const StartPageActionCards = styled.div`
@@ -47,7 +37,7 @@ export const CardStyled = styled(Card)`
     height: 30rem;
     width: 23rem;
     padding: 1rem;
-    margin: 0 5rem 5rem 0;
+    
     cursor: ${props => props.onClick ? 'pointer' : 'default'};
     overflow: hidden;
 `;
@@ -63,6 +53,11 @@ export const StartPageRoomsListStyled = styled.ul`
 
 export const StartPageRoomStyled = styled(motion.li)`
     margin-bottom: 1.5rem;
+
+    p {
+        color: ${colorBlue};
+        cursor: pointer;
+    }
 `;
 
 export const CreateSessionCardStyled = styled.div`

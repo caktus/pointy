@@ -10,7 +10,8 @@ export const AppStyled = styled.div`
 
 export const AppWrapperStyled = styled.div`
     flex: 1;
-    width: 65vw;
+    min-width: 65vw;
+    max-width: 90vw;
     display: flex;
     align-self: center;
     flex-direction: column;
