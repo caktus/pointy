@@ -18,7 +18,7 @@ const Input = ({ label, icon, errors, className, ...props }) => {
 
   useEffect(() => {
     const isBaseError = typeof errors === 'string';
-    if (isBaseError || props.value && errors && errors.length > 0) {
+    if (isBaseError || (props.value && errors && errors.length > 0)) {
       setHasErrors(true);
     }
     else setHasErrors(false);

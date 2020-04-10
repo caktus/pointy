@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import AppContext from "../context/appContext";
 
 export const AppProvider = ({ children, ...values }) => {

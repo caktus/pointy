@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { 
     UserListItemStyled,
     UserVote,
@@ -15,9 +14,5 @@ const UserListItem = ({ user, vote, ...props}) => {
     </UserListItemStyled>
   );
 }
-
-UserListItem.propTypes = {};
-
-UserListItem.defaultProps = {};
 
 export default UserListItem;

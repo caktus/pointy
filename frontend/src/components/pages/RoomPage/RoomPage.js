@@ -4,9 +4,6 @@ import { RoomPageStyled, SpinnerWrapper } from "./RoomPage.styled";
 // Route
 import { useParams, useLocation } from 'react-router';
 
-// Provider
-import { SessionSocketProvider } from '../../../providers/SessionSocketProvider';
-
 // Hooks
 import { useSessionSocket } from "../../../hooks/useSocket";
 
@@ -17,45 +14,48 @@ import { EVENT_TYPES } from "../../../services/WebSocket";
 
 export const RoomContext = createContext();
 
-const FAKE_ROOM = {
-  name: "Scarlet Crown Backlog Grooming",
-  session_id: "scarlet_crown_backlog_grooming",
-  users: [
-    "michael himself",
-    "gerald",
-    "karen",
-    "jeremy",
-    "colin"
-  ],
-  admin: "gannon",
-  votes: {
-    "michael himself": 5,
-    "gerald": 5,
-    "karen": 3,
-  },
-  ticket: "RATOM-212 Do the thing all the times",
-  values: [1, 2, 3, 5, 8, 13],
-  prev_tickets: [
-    { id: 1, name: "RATOM-199 Another thing", point: 5 },
-    { id: 2, name: "SGA-1016 A feature for things", point: 3 }
-  ]
-};
+// const FAKE_ROOM = {
+//   name: "Scarlet Crown Backlog Grooming",
+//   session_id: "scarlet_crown_backlog_grooming",
+//   users: [
+//     "michael himself",
+//     "gerald",
+//     "karen",
+//     "jeremy",
+//     "colin"
+//   ],
+//   admin: "gannon",
+//   votes: {
+//     "michael himself": 5,
+//     "gerald": 5,
+//     "karen": 3,
+//   },
+//   ticket: "RATOM-212 Do the thing all the times",
+//   values: [1, 2, 3, 5, 8, 13],
+//   prev_tickets: [
+//     { id: 1, name: "RATOM-199 Another thing", point: 5 },
+//     { id: 2, name: "SGA-1016 A feature for things", point: 3 }
+//   ]
+// };
 
 const RoomPage = props => {
   let { sessionId } = useParams()
   const { state: routerState } = useLocation(); 
   const [room, setRoom] = useState();
-  const { connected, publish, subscribe } = useSessionSocket();
+  const { publish, subscribe } = useSessionSocket();
 
   useEffect(() => {
-    if (connected) {
-      subscribe(EVENT_TYPES.ROOM_UPDATE, message => {});
-    }
-  }, [connected, subscribe]);
+    subscribe(EVENT_TYPES.ROOM_UPDATE, message => {
+      console.log('response from room_update: ', message)
+    });
+  }, []);
 
   useEffect(() => {
-    if (connected) publish(EVENT_TYPES.JOIN_ROOM, (message) => {});
-  }, [connected, publish])
+    publish(EVENT_TYPES.JOIN_ROOM, {
+      session_id: sessionId,
+      user: routerState.username
+    });
+  }, []);
 
   const roomContext = {
     room,
