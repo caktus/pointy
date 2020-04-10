@@ -80,6 +80,7 @@ def create_room(message):
             "admin_name": message["admin_name"],
             "values_template_id": message["values_template_id"],
             "phase": "ticket_creation",
+            "last_access_dt": timezone.now(),
         })
     PointyRoom.objects.filter(pk=room.pk).update(last_access_dt=timezone.now())
     return room
