@@ -33,27 +33,9 @@ services:
       REDIS_HOST: "redis://redis:6379/0"
     ports:
       - "8000:8000"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
