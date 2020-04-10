@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ws6v7y8aj9vwv1!h@9y&vxt6bb60lzf=tnv98&!2+5fu4@)&p%'
+SECRET_KEY = os.getenv("SECRET_KEY", 'ws6v7y8aj9vwv1!h@9y&vxt6bb60lzf=tnv98&!2+5fu4@)&p%')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = []
 
@@ -125,11 +125,11 @@ STATIC_URL = '/static/'
 # Channels
 ASGI_APPLICATION = 'pointy.routing.application'
 
-REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
+REDIS_HOST = os.getenv('REDIS_HOST', "redis://127.0.0.1:6379/0")
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [(REDIS_HOST, 6379)]}
+        "CONFIG": {"hosts": [REDIS_HOST]}
     }
 }
