@@ -19,6 +19,7 @@ import { SPRING } from '../../../styles/animations';
 import { useHomeSocket } from '../../../hooks/useSocket';
 import { EVENT_TYPES } from '../../../services/WebSocket';
 import NewRoomPage from '../NewRoomPage/NewRoomPage';
+import { MainContext } from '../../../App';
 
 
 const StartPage = () => {
@@ -29,6 +30,7 @@ const StartPage = () => {
   const [valueTemplates, setValueTemplates] = useState([]);
   const [errors, setErrors] = useState({});
   const [view, setView] = useState('start');
+  const { setUser } = useContext(MainContext);
   /**
    *  Subscribe to "pointy_state" updates, 
    *  including new rooms added and current ValueTemplates
@@ -69,6 +71,7 @@ const StartPage = () => {
     } 
 
     if (!session) return handleCreateNewSession(); 
+    setUser(username)
     history.push(`/${session}`, { username });
   }
 

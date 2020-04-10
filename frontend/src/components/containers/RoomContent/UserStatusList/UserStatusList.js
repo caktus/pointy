@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { UserStatusListStyled } from './UserStatusList.styled';
+import { UserStatusListStyled, AdminUserStyled } from "./UserStatusList.styled";
 import { AnimatePresence } from 'framer-motion';
 
 // Context
@@ -21,6 +21,7 @@ const UserStatusList = props => {
             const vote = room.votes && room.votes[user];
             return <UserListItem layoutTransition key={user} user={user} vote={vote}/>
           })}
+          <AdminUserStyled>{room.admin}</AdminUserStyled>
         </UserStatusListStyled>
       )}
     </AnimatePresence>

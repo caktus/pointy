@@ -15,6 +15,7 @@ import UserStatusList from './UserStatusList/UserStatusList';
 import CurrentTicket from '../CurrentTicket/CurrentTicket';
 import PointySpinner from '../../elements/PointySpinner/PointySpinner';
 import PreviousTickets from '../PreviousTickets/PreviousTickets';
+import { isEmpty } from '../../../util/isEmpty';
 
 
 const RoomContent = props => {
@@ -24,7 +25,7 @@ const RoomContent = props => {
       <RoomContentTop>
         <UserStatusList />
         <AnimatePresence>
-        {room.ticket ? (
+        {!isEmpty(room.ticket) ? (
           <CurrentTicket />
         ) : (
           <WaitingForTicket

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, createContext } from "react";
 import GlobalStyle from './styles/GlobalStyle';
 import { AppStyled, AppWrapperStyled } from "./App.styled";
 
@@ -13,14 +13,18 @@ import GlobalHeader from "./components/elements/GlobalHeader/GlobalHeader";
 import AsyncStartPage from "./components/pages/StartPage/AsyncStartPage";
 import AsyncRoomPage from './components/pages/RoomPage/AsyncRoomPage';
 
+export const MainContext = createContext();
+
 function App() {
+  const [user, setUser] = useState();
   // 🥞
   return (
     <>
       <GlobalStyle />
       <BrowserRouter>
-          <AppStyled>
-            <AppWrapperStyled>
+        <AppStyled>
+          <AppWrapperStyled>
+            <MainContext.Provider value={{ user, setUser }}>
               <GlobalHeader />
               <Switch>
                 <Route exact path="/">
@@ -30,8 +34,9 @@ function App() {
                   <AsyncRoomPage />
                 </ConnectedRoute>
               </Switch>
-            </AppWrapperStyled>
-          </AppStyled>
+            </MainContext.Provider>
+          </AppWrapperStyled>
+        </AppStyled>
       </BrowserRouter>
     </>
   );

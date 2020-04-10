@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   NewRoomPageStyled,
   NewRoomHeading,
@@ -10,6 +10,7 @@ import {
 import { useHistory } from "react-router";
 
 import Select from "../../elements/Select/Select";
+import MainContext from '../../../App';
 
 // hooks
 import { EVENT_TYPES } from "../../../services/WebSocket";
@@ -21,10 +22,13 @@ const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
   const [errors, setErrors] = useState({});
   const [waitingForRoom, setWaitingForRoom] = useState(false);
 
+  const { setUser } = useContext(MainContext);
+
   useEffect(() => {
     const newRoom = rooms.find(rm => rm.name === name);
     if (waitingForRoom && newRoom) {
       history.push(`/${newRoom.session_id}/`, { username });
+      setUser(username);
     }
   }, [rooms]);
 
