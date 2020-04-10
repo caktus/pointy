@@ -6,12 +6,9 @@ import * as config from '../services/config';
 
 export const SocketProvider = ({ path, opts, children }) => {
   const socketRef = useRef();
-  
-  console.log("socketRef", socketRef);
 
   if (!socketRef.current) {
     const rootUrl = config.BASE_SOCKET_URL;
-    console.log("THIS THIS THIS ", rootUrl);
     const url = rootUrl + path;
     socketRef.current = WebSocketConnection;
     socketRef.current.connect(url);
