@@ -55,25 +55,28 @@ class PointySession(JsonWebsocketConsumer):
 
 def build_pointy_state():
     return {
-        "rooms": [
-            {
-                "name": "Scarlet Crown Backlog Grooming",
-                "session_id": "sc_backlog_grooming",
-            },
-            {
-                "name": "Disco Backlog Grooming",
-                "session_id": "disco_backlog_grooming",
+        "type": "pointy_state",
+        "message": {
+            "rooms": [
+                {
+                    "name": "Scarlet Crown Backlog Grooming",
+                    "session_id": "sc_backlog_grooming",
+                },
+                {
+                    "name": "Disco Backlog Grooming",
+                    "session_id": "disco_backlog_grooming",
 
-            },
-        ],
-        "values_templates": [
-            {
-                "id": 1,
-                "name": "Sprint Point Values",
-            },
-            {
-                "id": 2,
-                "name": "Fist of Five",
-            },
-        ]
+                },
+            ],
+            "values_templates": [
+                {
+                    "id": 1,
+                    "name": "Sprint Point Values",
+                },
+                {
+                    "id": 2,
+                    "name": "Fist of Five",
+                },
+            ],
+        }
     }
