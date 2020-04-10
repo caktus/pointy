@@ -64,19 +64,17 @@ const RoomPage = props => {
   }
   if (!sessionId) return <PointySpinner large/>
   return (
-    <SessionSocketProvider path={`/${sessionId}/`}>
-      <RoomPageStyled>
-        {room ? (
-          <RoomContext.Provider value={roomContext}>
-            <RoomContent />
-          </RoomContext.Provider>
-        ) : (
-          <SpinnerWrapper>
-            <PointySpinner large />
-          </SpinnerWrapper>
-        )}
-      </RoomPageStyled>
-    </SessionSocketProvider>
+    <RoomPageStyled>
+      {room ? (
+        <RoomContext.Provider value={roomContext}>
+          <RoomContent />
+        </RoomContext.Provider>
+      ) : (
+        <SpinnerWrapper>
+          <PointySpinner large />
+        </SpinnerWrapper>
+      )}
+    </RoomPageStyled>
   );
 }
 

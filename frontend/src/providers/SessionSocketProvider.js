@@ -13,13 +13,9 @@ export const SessionSocketProvider = ({ path, children }) => {
     socketRef.current.connect(url);
   }
 
-  if (!socketRef.current) {
-    return <h1>Connecting...</h1>;
-  }
-
   return (
     <SessionSocketContext.Provider value={socketRef.current}>
-      {children}
+      {socketRef.current ? children : null}
     </SessionSocketContext.Provider>
   );
 };

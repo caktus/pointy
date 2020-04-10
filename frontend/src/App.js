@@ -13,9 +13,9 @@ import { AppProvider }from './providers/appProvider';
 import GlobalHeader from "./components/elements/GlobalHeader/GlobalHeader";
 
 // Pages
-import StartPage from './components/pages/StartPage/StartPage';
 import NewRoomPage from './components/pages/NewRoomPage/NewRoomPage';
-import RoomPage from './components/pages/RoomPage/RoomPage';
+import AsyncStartPage from "./components/pages/StartPage/AsyncStartPage";
+import AsyncRoomPage from './components/pages/RoomPage/AsyncRoomPage';
 
 function App() {
   const appContext = {}
@@ -23,26 +23,26 @@ function App() {
   return (
     <>
       <GlobalStyle />
-        <BrowserRouter>
-          <AppProvider value={appContext}>
-            <AppStyled>
-              <AppWrapperStyled>
-                <GlobalHeader />
-                <Switch>
-                  <Route exact path="/">
-                    <StartPage />
-                  </Route>
-                  <ConnectedRoute socket="home" path="/new">
-                    <NewRoomPage />
-                  </ConnectedRoute>
-                  <ConnectedRoute socket="session" path="/:sessionId">
-                    <RoomPage />
-                  </ConnectedRoute>
-                </Switch>
-              </AppWrapperStyled>
-            </AppStyled>
-          </AppProvider>
-        </BrowserRouter>
+      <BrowserRouter>
+        <AppProvider value={appContext}>
+          <AppStyled>
+            <AppWrapperStyled>
+              <GlobalHeader />
+              <Switch>
+                <Route exact path="/">
+                  <AsyncStartPage />
+                </Route>
+                <ConnectedRoute socket="home" path="/new">
+                  <NewRoomPage />
+                </ConnectedRoute>
+                <ConnectedRoute socket="session" path="/:sessionId">
+                  <AsyncRoomPage />
+                </ConnectedRoute>
+              </Switch>
+            </AppWrapperStyled>
+          </AppStyled>
+        </AppProvider>
+      </BrowserRouter>
     </>
   );
 }

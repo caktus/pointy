@@ -15,6 +15,7 @@ class WebSocketService {
   reconnectAttempts = 0;
 
   static getInstance() {
+    console.log('------>>>> getInstance()')
     if (!WebSocketService.instance) {
       WebSocketService.instance = new WebSocketService();
     }
@@ -24,9 +25,18 @@ class WebSocketService {
   constructor() {
     this.url = "";
     this.socket = null;
+    this.connect = this.connect.bind(this);
+    this._fallbackCallback = this._fallbackCallback.bind(this);
+    this.close = this.close.bind(this);
+    this.subscribe = this.subscribe.bind(this);
+    this.publish = this.publish.bind(this);
+    this._handleNewMessage = this._handleNewMessage.bind(this);
+    this.getState = this.getState.bind(this);
+    this.waitForSocketConnection = this.waitForSocketConnection.bind(this);
   }
 
   connect(url) {
+    console.log("------>>>> connect()");
     this.reconnectAttempts = this.reconnectAttempts + 1;
     this.url = url;
     this.socket = new WebSocket(this.url);
@@ -96,19 +106,19 @@ class WebSocketService {
     return this.socket.readyState;
   }
 
-  waitForSocketConnection() {
+  waitForSocketConnection(callback) {
     const socket = this.socket;
     const recursion = this.waitForSocketConnection;
-    let timeout = setTimeout(function () {
+    setTimeout(function () {
       if (socket.readyState === WebSocket.OPEN) {
         console.log("Connection is made");
+        callback()
         return
       } else {
         console.log("wait for connection...");
-        recursion();
+        recursion(callback);
       }
     }, 1);
-    return true
   }
 }
 

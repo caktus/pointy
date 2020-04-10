@@ -15,7 +15,6 @@ import { useHistory } from 'react-router-dom';
 import { SPRING } from '../../../styles/animations';
 
 // Hooks
-import { HomeSocketProvider } from '../../../providers/HomeSocketProvider';
 import { useHomeSocket } from '../../../hooks/useSocket';
 import { EVENT_TYPES } from '../../../services/WebSocket';
 
@@ -31,31 +30,29 @@ const rooms = [
   },
 ];
 
-const StartPage = props => {
+const StartPage = () => {
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [errors, setErrors] = useState({});
 
-  const { connected, publish, subscribe } = useHomeSocket();
+  const { publish, subscribe } = useHomeSocket();
   /**
    *  Subscribe to "pointy_state" updates, 
    *  including new rooms added and current ValueTemplates
    **/ 
   useEffect(() => {
-    if (connected) {
-      subscribe(EVENT_TYPES.POINTY_STATE, data => {
-        console.log('pointy state!: ', data);
-      });
-    };
-  }, [connected, subscribe]);
+    subscribe(EVENT_TYPES.POINTY_STATE, data => {
+      console.log('pointy state!: ', data);
+    });
+  }, []);
 
   /**
    *  Publish "request_pointy_state" 
    *  Effectively, "Somebody just joined and needs initial point_state"
    **/ 
   useEffect(() => {
-    if (connected) publish(EVENT_TYPES.REQUEST_POINTY_STATE, {});
-  }, [connected, publish]);
+    publish(EVENT_TYPES.REQUEST_POINTY_STATE, {});
+  }, []);
 
 
 
@@ -81,7 +78,6 @@ const StartPage = props => {
   }
 
   return (
-    <HomeSocketProvider path="/">
       <StartPageStyled>
         <h1>Welcome to Pointy!</h1>
 
@@ -118,7 +114,6 @@ const StartPage = props => {
           </CardStyled>
         </StartPageActionCards>
       </StartPageStyled>
-    </HomeSocketProvider>
   );
 }
 

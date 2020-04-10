@@ -13,13 +13,9 @@ export const HomeSocketProvider = ({ path, children }) => {
     socketRef.current.connect(url);
   }
 
-  if (!socketRef.current) {
-    return <h1>Connecting...</h1>
-  }
-
   return (
     <HomeSocketContext.Provider value={socketRef.current}>
-      {children}
+     {socketRef.current ? children : null}
     </HomeSocketContext.Provider>
   );
 };

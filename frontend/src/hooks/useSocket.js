@@ -3,32 +3,29 @@ import HomeSocketContext from '../context/HomeSocketContext';
 import SessionSocketContext from "../context/SessionSocketContext";
 
 export const useHomeSocket = () => {
-    const homeSocket = useContext(HomeSocketContext);
-    const [connected, setConnected] = useState(false);
+  const homeSocket = useContext(HomeSocketContext);
 
-    useEffect(() => {
-        if (homeSocket) setConnected(homeSocket.waitForSocketConnection());
-    }, [homeSocket])
+  const publish = (eventName, data) => {
+    homeSocket.waitForSocketConnection(() => homeSocket.publish(eventName, data))
+  };
 
-    const publish = (eventName, data) => homeSocket.publish(eventName, data);
+  const subscribe = (eventName, callback) => {
+    homeSocket.waitForSocketConnection(() => homeSocket.subscribe(eventName, callback))
+  };
 
-    const subscribe = (eventName, callback) => homeSocket.subscribe(eventName, callback);
-
-    return { connected, publish, subscribe };
+  return { publish, subscribe };
 };
 
 export const useSessionSocket = () => {
     const sessionSocket = useContext(SessionSocketContext);
-    const [connected, setConnected] = useState(false);
 
-    useEffect(() => {
-        if (sessionSocket) setConnected(sessionSocket.waitForSocketConnection());
-    }, [sessionSocket])
+    const publish = (eventName, data) => {
+      sessionSocket.waitForSocketConnection(() => sessionSocket.publish(eventName, data));
+    }
 
-    const publish = (eventName, data) => sessionSocket.publish(eventName, data);
+    const subscribe = (eventName, callback) => {
+      sessionSocket.waitForSocketConnection(() => sessionSocket.subscribe(eventName, callback));
+    }
 
-    const subscribe = (eventName, callback) => sessionSocket.subscribe(eventName, callback);
-
-    return { connected, publish, subscribe };
+    return { publish, subscribe };
 };
-
