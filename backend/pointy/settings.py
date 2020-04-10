@@ -20,12 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", 'ws6v7y8aj9vwv1!h@9y&vxt6bb60lzf=tnv98&!2+5fu4@)&p%')
+SECRET_KEY = os.getenv("SECRET_KEY", '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('DOMAIN', [])
 
 
 # Application definition
@@ -76,12 +76,7 @@ WSGI_APPLICATION = 'pointy.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES = os.getenv('DATABASE_URL', '')
 
 
 # Password validation
@@ -125,11 +120,11 @@ STATIC_URL = '/static/'
 # Channels
 ASGI_APPLICATION = 'pointy.routing.application'
 
-REDIS_HOST = os.getenv('REDIS_HOST', "redis://127.0.0.1:6379/0")
+BROKER_HOST = os.getenv('BROKER_HOST', "redis://127.0.0.1:6379/0")
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [REDIS_HOST]}
+        "CONFIG": {"hosts": [BROKER_HOST]}
     }
 }

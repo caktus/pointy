@@ -1,0 +1,139 @@
+{#
+Anywhere we need to inject a non-scalar value, we use to_json instead of to_yaml because it:
+1) more reliably includes wrapping {}
+2) behaves identically on Python 2 and Python 3
+(and all JSON is valid YAML).
+#}
+{% for container in k8s_web_containers %}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ container["name"] }}-secrets"
+  labels:
+    app: "{{ container["name"] }}"
+  namespace: "{{ k8s_namespace }}"
+type: Opaque
+stringData: {{ container["environment"] | to_json }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ container["name"] }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ container["name"] }}"
+  replicas: {{ container["replicas"] }}
+  template:
+    metadata:
+      labels:
+        app: "{{ container["name"] }}"
+    spec:
+{% if k8s_dockerconfigjson %}
+      imagePullSecrets:
+      - name: registry-secret
+{% else %}
+      imagePullSecrets: []
+{% endif %}
+      containers:
+      - name: "{{ container["name"] }}"
+        image: "{{ container["image"] }}:{{ container["tag"] }}"
+        imagePullPolicy: "{{ container["image_pull_policy"] }}"
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+        envFrom:
+        - secretRef:
+            name: "{{ container["name"] }}-secrets"
+        ports:
+        - containerPort: {{ container["port"] }}
+        resources: {{ container["resources"] | to_json }}
+      securityContext: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ container["name"] }}"
+  labels:
+    app: "{{ container["name"] }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  ports:
+  - protocol: TCP
+    # Where other things in the cluster should try to connect to our application
+    port: {{ container["port"] }}
+    # Where our application is listening:
+    targetPort: {{ container["port"] }}
+  selector:
+    app: "{{ container["name"] }}"
+---
+{% endfor %}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "ingress"
+  namespace: "{{ k8s_namespace }}"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.org/mergeable-ingress-type: master
+{% if k8s_ingress_certificate_issuer %}
+    certmanager.k8s.io/cluster-issuer: "{{ k8s_ingress_certificate_issuer }}"
+{% endif %}
+spec:
+  tls:
+  - hosts:
+{% for domain in k8s_domain_names %}
+    - "{{ domain }}"
+{% endfor %}
+    secretName: "{{ k8s_namespace }}-tls"
+  rules:
+{% for domain in k8s_domain_names %}
+  - host: "{{ domain }}"
+{% endfor %}
+{% for container in k8s_web_containers %}
+{% if container["htpasswd"] %}
+---
+apiVersion: v1
+data:
+  auth: {{ container["htpasswd"] | b64encode }}
+kind: Secret
+metadata:
+  name: basic-auth-{{ container["name"] }}
+  namespace: "{{ k8s_namespace }}"
+type: Opaque
+{% endif %}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "ingress-{{ container["name"] }}"
+  namespace: "{{ k8s_namespace }}"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.org/mergeable-ingress-type: minion
+    nginx.ingress.kubernetes.io/backend-protocol: "{{ container["protocol"] }}"
+{% if container["htpasswd"] %}
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth-{{ container["name"] }}
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+{% else %}{# Disable basic auth, in case it was enabled previously. #}
+    nginx.ingress.kubernetes.io/auth-type: ""
+{% endif %}
+{% for key, value in container["ingress_annotations"].items() %}
+    {{ key }}: "{{ value }}"
+{% endfor %}
+spec:
+  rules:
+{% for domain in k8s_domain_names %}
+  - host: "{{ domain }}"
+    http:
+      paths:
+{% for ingress_path in container["ingress_paths"] %}
+      - path: "{{ ingress_path }}"
+        backend:
+          serviceName: "{{ container["name"] }}"
+          servicePort: {{ container["port"] }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
