@@ -1,0 +1,21 @@
+{
+  "PrimaryAZ": "us-west-2a",
+  "SecondaryAZ": "us-west-2b",
+  "VpcCidr": "10.10.0.0/16",
+  "PublicSubnetACidr": "10.10.0.0/20",
+  "PublicSubnetBCidr": "10.10.16.0/20",
+  "PrivateSubnetACidr": "10.10.32.0/20",
+  "PrivateSubnetBCidr": "10.10.48.0/20",
+  "UseAES256Encryption": "false",
+  "CustomerManagedCmkArn": "",
+  "ContainerInstanceType": "t2.medium",
+  "DatabaseClass": "db.t2.medium",
+  "DatabaseEngine": "postgres",
+  "DatabaseEngineVersion": "12.?",
+  "DatabaseParameterGroupFamily": "postgres12",
+  "DatabaseName": "pointy",
+  "DatabaseUser": "pointy",
+  "DatabaseMultiAZ": "false",
+  "DatabaseBackupRetentionDays": 0,
+  "S3BucketsParameter": "false"
+}

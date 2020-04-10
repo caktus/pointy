@@ -1,4 +1,2 @@
-caktus-pointy ansible_host=localhost connection=local
-
 [k8s]
-caktus-pointy
+staging
