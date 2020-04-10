@@ -23,7 +23,6 @@ k8s_environment_variables:
   DJANGO_SETTINGS_MODULE: 'pointy.settings'
   # DOMAIN is the ALLOWED_HOST
   DOMAIN: "{{ k8s_domain_names[0] }}"
-  EMAIL_SUBJECT_PREFIX: '[pointy {{ env_name }}] '
   ENVIRONMENT: "{{ env_name }}"
   SECRET_KEY: !vault |
           $ANSIBLE_VAULT;1.1;AES256
