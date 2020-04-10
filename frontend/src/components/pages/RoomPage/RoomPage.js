@@ -23,6 +23,7 @@ const FAKE_ROOM = {
     "jeremy",
     "colin"
   ],
+  admin: "gannon",
   votes: {
     "michael himself": 5,
     "gerald": 5,

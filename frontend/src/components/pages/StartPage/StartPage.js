@@ -60,7 +60,7 @@ const StartPage = props => {
       return setErrors({ ...errors, username: "You must provide a username"})
     } 
 
-    if (!session) return handleCreateNewSession();
+    if (!session) return handleCreateNewSession(); 
     history.push(`/${session}`, { username });
   }
 

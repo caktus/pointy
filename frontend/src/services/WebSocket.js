@@ -19,7 +19,6 @@ class WebSocketService {
 
   connect(url) {
     this.reconnectAttempts = this.reconnectAttempts + 1;
-    console.log("attempting reoconnect: ", this.reconnectAttempts);
     this.url = url;
     this.socket = new WebSocket(this.url);
 
@@ -45,7 +44,7 @@ class WebSocketService {
         }, config.RECONNECT_ATTEMPT_INVERVAL);
       } else {
         console.log(
-          "Reached maxium reconnect attemps: ",
+          "Reached maxium reconnect attempts: ",
           config.MAX_RECONNECT_ATTEMPTS
         );
       }
@@ -79,12 +78,11 @@ class WebSocketService {
     // }
   }
 
-  state() {
+  getState() {
     return this.socket.readyState;
   }
 
   waitForSocketConnection() {
-    console.log('this in waitForSocket is: ', this)
     const socket = this.socket;
     const recursion = this.waitForSocketConnection;
     let timeout = setTimeout(function () {

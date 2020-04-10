@@ -4,6 +4,7 @@ import { AppStyled, AppWrapperStyled } from "./App.styled";
 
 // Rotuer
 import { BrowserRouter, Switch,  Route } from "react-router-dom";
+import ConnectedRoute from "./services/ConnectedRoute";
 
 // Providers
 import { AppProvider }from './providers/appProvider';
@@ -33,12 +34,12 @@ function App() {
                   <Route exact path="/">
                     <StartPage />
                   </Route>
-                  <Route path="/new">
+                  <ConnectedRoute path="/new">
                     <NewRoomPage />
-                  </Route>
-                  <Route path="/:sessionId">
+                  </ConnectedRoute>
+                  <ConnectedRoute path="/:sessionId">
                     <RoomPage />
-                  </Route>
+                  </ConnectedRoute>
                 </Switch>
               </AppWrapperStyled>
             </AppStyled>

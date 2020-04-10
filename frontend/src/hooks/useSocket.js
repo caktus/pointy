@@ -7,7 +7,7 @@ const useSocket = () => {
 
     useEffect(() => {
         if (socket) {
-            console.log('socket is: ', socket);
+            console.log('USE SOCKET socket is: ', socket);
             setConnected(socket.waitForSocketConnection());
         }
     }, [socket])
