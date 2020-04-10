@@ -8,7 +8,6 @@ import ConnectedRoute from "./services/ConnectedRoute";
 
 // Providers
 import { AppProvider }from './providers/appProvider';
-import { SocketProvider } from "./providers/socketProvider";
 
 // Components
 import GlobalHeader from "./components/elements/GlobalHeader/GlobalHeader";
@@ -24,7 +23,6 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <SocketProvider path="">
         <BrowserRouter>
           <AppProvider value={appContext}>
             <AppStyled>
@@ -34,10 +32,10 @@ function App() {
                   <Route exact path="/">
                     <StartPage />
                   </Route>
-                  <ConnectedRoute path="/new">
+                  <ConnectedRoute socket="home" path="/new">
                     <NewRoomPage />
                   </ConnectedRoute>
-                  <ConnectedRoute path="/:sessionId">
+                  <ConnectedRoute socket="session" path="/:sessionId">
                     <RoomPage />
                   </ConnectedRoute>
                 </Switch>
@@ -45,7 +43,6 @@ function App() {
             </AppStyled>
           </AppProvider>
         </BrowserRouter>
-      </SocketProvider>
     </>
   );
 }

@@ -4,12 +4,16 @@ import { RoomPageStyled, SpinnerWrapper } from "./RoomPage.styled";
 // Route
 import { useParams, useLocation } from 'react-router';
 
+// Provider
+import { SessionSocketProvider } from '../../../providers/SessionSocketProvider';
+
 // Hooks
-import useSocket from '../../../hooks/useSocket';
+import { useSessionSocket } from "../../../hooks/useSocket";
 
 // Components
 import PointySpinner from "../../elements/PointySpinner/PointySpinner";
 import RoomContent from "../../containers/RoomContent/RoomContent";
+import { EVENT_TYPES } from "../../../services/WebSocket";
 
 export const RoomContext = createContext();
 
@@ -41,37 +45,38 @@ const RoomPage = props => {
   let { sessionId } = useParams()
   const { state: routerState } = useLocation(); 
   const [room, setRoom] = useState();
-  const { connected, publish, subscribe } = useSocket();
+  const { connected, publish, subscribe } = useSessionSocket();
 
   useEffect(() => {
-    console.log("connected: ", connected);
     if (connected) {
-      console.log('setting room: ', FAKE_ROOM);
-      setTimeout(() => setRoom(FAKE_ROOM), 1000)
-      subscribe("room_updates", roomDetails => {
-        // setRoom(JSON.parse(roomDetails))
-      });
+      subscribe(EVENT_TYPES.ROOM_UPDATE, message => {});
     }
-  }, [connected]);
+  }, [connected, subscribe]);
+
+  useEffect(() => {
+    if (connected) publish(EVENT_TYPES.JOIN_ROOM, (message) => {});
+  }, [connected, publish])
 
   const roomContext = {
     room,
     publish,
     subscribe
   }
-
+  if (!sessionId) return <PointySpinner large/>
   return (
-    <RoomPageStyled>
-      {room ? (
-        <RoomContext.Provider value={roomContext}>
-          <RoomContent />
-        </RoomContext.Provider>
-      ) : (
-        <SpinnerWrapper>
-          <PointySpinner large />
-        </SpinnerWrapper>
-      )}
-    </RoomPageStyled>
+    <SessionSocketProvider path={`/${sessionId}/`}>
+      <RoomPageStyled>
+        {room ? (
+          <RoomContext.Provider value={roomContext}>
+            <RoomContent />
+          </RoomContext.Provider>
+        ) : (
+          <SpinnerWrapper>
+            <PointySpinner large />
+          </SpinnerWrapper>
+        )}
+      </RoomPageStyled>
+    </SessionSocketProvider>
   );
 }
 

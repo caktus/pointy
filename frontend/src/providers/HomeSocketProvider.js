@@ -1,15 +1,14 @@
 import React, { useRef } from "react";
-import SocketContext from "../context/socketContext";
+import HomeSocketContext from "../context/HomeSocketContext";
 import WebSocketConnection from '../services/WebSocket';
-import * as config from '../services/config';
+import { BASE_SOCKET_URL } from "../services/config";
 
 
-export const SocketProvider = ({ path, opts, children }) => {
+export const HomeSocketProvider = ({ path, children }) => {
   const socketRef = useRef();
 
   if (!socketRef.current) {
-    const rootUrl = config.BASE_SOCKET_URL;
-    const url = rootUrl + path;
+    const url = BASE_SOCKET_URL + path;
     socketRef.current = WebSocketConnection;
     socketRef.current.connect(url);
   }
@@ -19,8 +18,8 @@ export const SocketProvider = ({ path, opts, children }) => {
   }
 
   return (
-    <SocketContext.Provider value={socketRef.current}>
+    <HomeSocketContext.Provider value={socketRef.current}>
       {children}
-    </SocketContext.Provider>
+    </HomeSocketContext.Provider>
   );
 };
