@@ -4,7 +4,7 @@ export const PrevTicketStyled = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 22rem;
+    width: 18rem;
     margin: 1rem;
 
     p {

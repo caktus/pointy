@@ -8,7 +8,7 @@ const PrevTicket = ({ ticket }) => {
   return (
     <PrevTicketStyled>
       <p>{ticket.name}</p>
-      <TicketCard vote={ticket.point}/>
+      <TicketCard point={ticket.point}/>
     </PrevTicketStyled>
   );
 }
