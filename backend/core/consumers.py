@@ -1,7 +1,12 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 
+from django.utils import timezone
+
+
 HOME_GROUP_NAME = "PointyHome"
+
+from .models import VALUES_TEMPLATES, PointyRoom
 
 
 class PointyHome(JsonWebsocketConsumer):
@@ -22,12 +27,11 @@ class PointyHome(JsonWebsocketConsumer):
         if content["type"] == "request_pointy_state":
             self.send(build_pointy_state())
         elif content["type"] == "room_created":
-            # do what's needed to create the room
+            self.create_room(content["message"])
             async_to_sync(self.channel_layer.group_send)(
                 HOME_GROUP_NAME,
                 build_pointy_state()
             )
-
 
 class PointySession(JsonWebsocketConsumer):
     def connect(self):
@@ -53,30 +57,27 @@ class PointySession(JsonWebsocketConsumer):
         )
 
 
+
 def build_pointy_state():
     return {
         "type": "pointy_state",
         "message": {
             "rooms": [
-                {
-                    "name": "Scarlet Crown Backlog Grooming",
-                    "session_id": "sc_backlog_grooming",
-                },
-                {
-                    "name": "Disco Backlog Grooming",
-                    "session_id": "disco_backlog_grooming",
-
-                },
+                {"name": t[0], "session_id": t[1]} for t in PointyRoom.objects.values_list("name", "session_id")
             ],
-            "values_templates": [
-                {
-                    "id": 1,
-                    "name": "Sprint Point Values",
-                },
-                {
-                    "id": 2,
-                    "name": "Fist of Five",
-                },
-            ],
+            "values_templates":
+                [{"id": d["id"], "name": d["name"]} for d in VALUES_TEMPLATES]
         }
     }
+
+
+def create_room(message):
+    room, _created = PointyRoom.objects.get_or_create(
+        session_id=message["session_id"], defaults={
+            "name": message["room_name"],
+            "admin_name": message["admin_name"],
+            "values_template_id": message["values_template_id"],
+            "phase": "ticket_creation",
+        })
+    PointyRoom.objects.filter(pk=room.pk).update(last_access_dt=timezone.now())
+    return room
