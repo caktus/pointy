@@ -63,6 +63,7 @@ class PointySession(JsonWebsocketConsumer):
             return
 
         publish_room = False
+        single_send_room = False
         room_fields = []
         event_type = content.get("type")
         message = content.get("message", {})
@@ -72,6 +73,9 @@ class PointySession(JsonWebsocketConsumer):
             _ruser, created = RoomUser.objects.get_or_create(room=room, username=username)
             if created:
                 publish_room = True
+            else:
+                # user re-joining needs the room data, but others don't
+                single_send_room = True
         elif event_type == "ticket_created" and room.phase == "ticket_creation":
             name = message.get("ticket_name")
             RoomTicket.objects.create(room=room, name=name, last_update_dt=timezone.now())
@@ -100,7 +104,7 @@ class PointySession(JsonWebsocketConsumer):
                         ticket.save()
                         room.users.update(vote="")
 
-        if room_fields:
+        if room_fields or publish_room or single_send_room:
             room.last_access_dt = timezone.now()
             room_fields.append("last_access_dt")
             room.save(update_fields=room_fields)
@@ -110,6 +114,8 @@ class PointySession(JsonWebsocketConsumer):
                 self.group_name,
                 build_room_update(room)
             )
+        elif single_send_room:
+            self.send(json.dumps(build_room_update(room)))
 
 
 def build_room_update(room):
