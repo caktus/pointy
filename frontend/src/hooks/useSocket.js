@@ -6,7 +6,10 @@ const useSocket = () => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        setConnected(socket.waitForSocketConnection());
+        if (socket) {
+            console.log('socket is: ', socket);
+            setConnected(socket.waitForSocketConnection());
+        }
     }, [socket])
 
     const publish = (eventName, data) => socket.publish(eventName, data);

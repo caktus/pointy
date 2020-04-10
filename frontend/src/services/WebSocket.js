@@ -84,17 +84,19 @@ class WebSocketService {
   }
 
   waitForSocketConnection() {
+    console.log('this in waitForSocket is: ', this)
     const socket = this.socket;
     const recursion = this.waitForSocketConnection;
-    return setTimeout(function () {
+    let timeout = setTimeout(function () {
       if (socket.readyState === WebSocket.OPEN) {
         console.log("Connection is made");
-        return true;
+        return
       } else {
         console.log("wait for connection...");
         recursion();
       }
     }, 1);
+    return true
   }
 }
 

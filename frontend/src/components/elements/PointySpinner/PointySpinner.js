@@ -10,7 +10,7 @@ function PointySpinner(props) {
 
 const PointySpinnerStyled = styled.span`
   display: inline-block;
-  font-size: ${(props) => (props.large ? "10rem" : "4rem")};
+  font-size: ${(props) => (props.large ? "10rem" : "3rem")};
   animation: ${spin} infinite 3s linear;
 `;
 

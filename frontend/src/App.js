@@ -23,7 +23,7 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <SocketProvider path='/pointy/'>
+      <SocketProvider path="/pointy/">
         <BrowserRouter>
           <AppProvider value={appContext}>
             <AppStyled>
@@ -36,7 +36,7 @@ function App() {
                   <Route path="/new">
                     <NewRoomPage />
                   </Route>
-                  <Route path="/:room">
+                  <Route path="/:sessionId">
                     <RoomPage />
                   </Route>
                 </Switch>
