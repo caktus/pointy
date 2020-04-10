@@ -8,7 +8,7 @@ from django.utils import timezone
 
 HOME_GROUP_NAME = "PointyHome"
 
-from .models import VALUES_TEMPLATES, PointyRoom
+from .models import VALUES_TEMPLATES, PointyRoom, RoomUser, RoomTicket
 
 
 class PointyHome(JsonWebsocketConsumer):
@@ -54,13 +54,69 @@ class PointySession(JsonWebsocketConsumer):
             self.channel_name
         )
 
-    def receive_json(self, content, **kwargs):
-        # Currently just echoes back what we get
-        async_to_sync(self.channel_layer.group_send)(
-            self.group_name,
-            content
-        )
+    def room_update(self, event):
+        self.send(text_data=json.dumps(event))
 
+    def receive_json(self, content, **kwargs):
+        room = PointyRoom.objects.filter(session_id=self.session_id).first()
+        if not room:
+            return
+
+        publish_room = False
+        room_fields = []
+        event_type = content.get("type")
+        message = content.get("message", {})
+
+        if event_type == "join_room":
+            username = message.get("user")
+            _ruser, created = RoomUser.objects.get_or_create(room=room, username=username)
+            if created:
+                publish_room = True
+        elif event_type == "ticket_created" and room.phase == "ticket_creation":
+            name = message.get("ticket_name")
+            RoomTicket.objects.create(room=room, name=name, last_update_dt=timezone.now())
+            room.phase = "voting"
+            room_fields.append("phase")
+            publish_room = True
+        elif event_type == "vote" and room.phase != "ticket_creation":
+            username = message.get("user")
+            vote = message.get("point")
+            ruser = room.users.filter(username=username)
+            if ruser and vote and str(vote) != ruser.vote:
+                ruser.vote = vote
+                ruser.save()
+                publish_room = True
+                if room.phase == "voting" and not room.users.filter(vote="").exists():
+                    room.phase = "reconciliation"
+                    room_fields.append("phase")
+                elif room.phase == "reconciliation":
+                    vote_values = room.users.values_list("vote", flat=True).distinct()
+                    if vote_values.count() == 1:
+                        room.phase = "ticket_creation"
+                        room_fields.append("phase")
+                        ticket = room.tickets.order_by('-last_update_dt').first()
+                        ticket.final_vote = vote_values[0]
+                        ticket.last_update_dt = timezone.now()
+                        ticket.save()
+                        room.users.update(vote="")
+
+        if room_fields:
+            room.last_access_dt = timezone.now()
+            room_fields.append("last_access_dt")
+            room.save(update_fields=room_fields)
+
+        if publish_room:
+            async_to_sync(self.channel_layer.group_send)(
+                self.group_name,
+                build_room_update(room)
+            )
+
+
+def build_room_update(room):
+    return {
+        "type": "room_update",
+        "message": room.update_message(),
+    }
 
 
 def build_pointy_state():
@@ -71,7 +127,7 @@ def build_pointy_state():
                 {"name": t[0], "session_id": t[1]} for t in PointyRoom.objects.values_list("name", "session_id")
             ],
             "values_templates":
-                [{"id": d["id"], "name": d["name"]} for d in VALUES_TEMPLATES]
+                [{"id": key, "name": value["name"]} for key, value in VALUES_TEMPLATES.items()]
         }
     }
 
