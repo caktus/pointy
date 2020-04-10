@@ -1,12 +1,12 @@
 import * as config from './config';
 
 export const EVENT_TYPES = {
-  REQUEST_POINTY_STATE: 'request_pointy_state',
-  POINTY_STATE: 'pointy_state',
-  ROOM_CREATED: 'room_created',
+  'request_pointy_state': 'request_pointy_state',
+  'pointy_state': 'pointy_state',
+  'room_created': 'room_created',
 
-  ROOM_UPDATE: 'room_update',
-  JOIN_ROOM: 'join_room',
+  'room_update': 'room_update',
+  'join_room': 'join_room',
 }
 
 class WebSocketService {
@@ -93,12 +93,11 @@ class WebSocketService {
   }
 
   _handleNewMessage(data) {
-    console.log("new message recieved: ", data);
-    const { type, message } = data;
-    if (!this.callbacks[EVENT_TYPES.REQUEST_POINTY_STATE]) {
+    const { type, message } = JSON.parse(data);
+    if (!this.callbacks[EVENT_TYPES[type]]) {
       console.log(`WebSocket instance recieved unhandled event type "${type}"`);
     } else {
-       this.callbacks[EVENT_TYPES.REQUEST_POINTY_STATE](message);
+       this.callbacks[EVENT_TYPES[type]](message);
     }
   }
 

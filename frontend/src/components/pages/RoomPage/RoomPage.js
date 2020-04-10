@@ -45,13 +45,13 @@ const RoomPage = props => {
   const { publish, subscribe } = useSessionSocket();
 
   useEffect(() => {
-    subscribe(EVENT_TYPES.ROOM_UPDATE, message => {
+    subscribe(EVENT_TYPES.room_update, message => {
       console.log('response from room_update: ', message)
     });
   }, []);
 
   useEffect(() => {
-    publish(EVENT_TYPES.JOIN_ROOM, {
+    publish(EVENT_TYPES.join_room, {
       session_id: sessionId,
       user: routerState.username
     });

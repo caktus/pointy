@@ -46,7 +46,6 @@ export const StartPageRoomsListStyled = styled.ul`
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 1rem 1rem 0 1rem;
     overflow-y: scroll;
 `;

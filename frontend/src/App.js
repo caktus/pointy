@@ -1,13 +1,10 @@
-import React from 'react';
+import React from "react";
 import GlobalStyle from './styles/GlobalStyle';
 import { AppStyled, AppWrapperStyled } from "./App.styled";
 
 // Rotuer
 import { BrowserRouter, Switch,  Route } from "react-router-dom";
 import ConnectedRoute from "./services/ConnectedRoute";
-
-// Providers
-import { AppProvider }from './providers/appProvider';
 
 // Components
 import GlobalHeader from "./components/elements/GlobalHeader/GlobalHeader";
@@ -18,13 +15,11 @@ import AsyncStartPage from "./components/pages/StartPage/AsyncStartPage";
 import AsyncRoomPage from './components/pages/RoomPage/AsyncRoomPage';
 
 function App() {
-  const appContext = {}
   // 🥞
   return (
     <>
       <GlobalStyle />
       <BrowserRouter>
-        <AppProvider value={appContext}>
           <AppStyled>
             <AppWrapperStyled>
               <GlobalHeader />
@@ -41,7 +36,6 @@ function App() {
               </Switch>
             </AppWrapperStyled>
           </AppStyled>
-        </AppProvider>
       </BrowserRouter>
     </>
   );

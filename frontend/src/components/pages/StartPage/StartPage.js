@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StartPageStyled,
   StartPageUsername,
@@ -14,35 +14,28 @@ import { useHistory } from 'react-router-dom';
 
 import { SPRING } from '../../../styles/animations';
 
+
 // Hooks
 import { useHomeSocket } from '../../../hooks/useSocket';
 import { EVENT_TYPES } from '../../../services/WebSocket';
 
-// TODO: REMOVE
-const rooms = [
-  {
-    name: "Scarlet Crown Backlog Grooming 4/2/2020",
-    room: "scarlet_crown_backlog_grooming",
-  },
-  { 
-    name: "Disco Sprint Planning 4/9/2020", 
-    room: "disco_sprint_planning" 
-  },
-];
 
 const StartPage = () => {
   const history = useHistory();
-  const [username, setUsername] = useState('');
-  const [errors, setErrors] = useState({});
-
   const { publish, subscribe } = useHomeSocket();
+  const [username, setUsername] = useState('');
+  const [rooms, setRooms] = useState([]);
+  const [valueTemplates, setValueTemplates] = useState([]);
+  const [errors, setErrors] = useState({});
   /**
    *  Subscribe to "pointy_state" updates, 
    *  including new rooms added and current ValueTemplates
    **/ 
   useEffect(() => {
-    subscribe(EVENT_TYPES.POINTY_STATE, data => {
-      console.log('pointy state!: ', data);
+    subscribe(EVENT_TYPES.pointy_state, data => {
+      console.log('data tho: ', data);
+      setRooms(data.rooms);
+      setValueTemplates(data.values_templates);
     });
   }, []);
 
@@ -51,7 +44,7 @@ const StartPage = () => {
    *  Effectively, "Somebody just joined and needs initial point_state"
    **/ 
   useEffect(() => {
-    publish(EVENT_TYPES.REQUEST_POINTY_STATE, {});
+    publish(EVENT_TYPES.request_pointy_state, {});
   }, []);
 
 
@@ -65,7 +58,7 @@ const StartPage = () => {
   }
   
   const handleCreateNewSession = () => {
-    history.push("/new", { username });
+    history.push("/new", { username, valueTemplates });
   }
 
   const handleOptionSelected = session => {
@@ -96,9 +89,9 @@ const StartPage = () => {
           <CardStyled>
             <motion.h3 layoutTransition={SPRING}>Join a session</motion.h3>
             <StartPageRoomsListStyled>
-              {rooms.map((room) => (
-                <StartPageRoomStyled key={room.room} layoutTransition={SPRING}>
-                  <p onClick={() => handleOptionSelected(room.room)}>
+              {rooms && rooms.map((room) => (
+                <StartPageRoomStyled key={room.session_id} layoutTransition={SPRING}>
+                  <p onClick={() => handleOptionSelected(room.session_id)}>
                     {room.name}
                   </p>
                 </StartPageRoomStyled>
