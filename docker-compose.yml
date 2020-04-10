@@ -23,10 +23,10 @@ services:
     volumes:
       - prod_pointy_data:/var/lib/postgresql/data
       - prod_pointy_data_backups:/backups
-  app:
+  api:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./backend/Dockerfile
     links:
       - db:db
     environment:
