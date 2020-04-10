@@ -24,7 +24,7 @@ const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
   useEffect(() => {
     const newRoom = rooms.find(rm => rm.name === name);
     if (waitingForRoom && newRoom) {
-      history.push(`'/${newRoom.session_id}/'`);
+      history.push(`/${newRoom.session_id}/`, { username });
     }
   }, [rooms]);
 
