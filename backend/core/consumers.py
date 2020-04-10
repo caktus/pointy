@@ -3,6 +3,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 
 HOME_GROUP_NAME = "PointyHome"
 
+
 class PointyHome(JsonWebsocketConsumer):
     def connect(self):
         async_to_sync(self.channel_layer.group_add)(
@@ -18,11 +19,14 @@ class PointyHome(JsonWebsocketConsumer):
         )
 
     def receive_json(self, content, **kwargs):
-        # Currently just echoes back what we get
-        async_to_sync(self.channel_layer.group_send)(
-            HOME_GROUP_NAME,
-            content
-        )
+        if content["type"] == "request_pointy_state":
+            self.send(build_pointy_state())
+        elif content["type"] == "room_created":
+            # do what's needed to create the room
+            async_to_sync(self.channel_layer.group_send)(
+                HOME_GROUP_NAME,
+                build_pointy_state()
+            )
 
 
 class PointySession(JsonWebsocketConsumer):
@@ -47,3 +51,29 @@ class PointySession(JsonWebsocketConsumer):
             self.group_name,
             content
         )
+
+
+def build_pointy_state():
+    return {
+        "rooms": [
+            {
+                "name": "Scarlet Crown Backlog Grooming",
+                "session_id": "sc_backlog_grooming",
+            },
+            {
+                "name": "Disco Backlog Grooming",
+                "session_id": "disco_backlog_grooming",
+
+            },
+        ],
+        "values_templates": [
+            {
+                "id": 1,
+                "name": "Sprint Point Values",
+            },
+            {
+                "id": 2,
+                "name": "Fist of Five",
+            },
+        ]
+    }
