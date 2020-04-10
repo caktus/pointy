@@ -33,9 +33,7 @@ class PointyRoom(models.Model):
             "prev_tickets": [
                 {"id": t[0], "name": t[1], "point": t[2]} for t in prev_tickets.values_list("id", "name", "final_vote")
             ],
-            "votes": [
-                {u.username: u.vote} for u in self.users.all()
-            ]
+            "votes": {u.username: u.vote for u in self.users.all()}
         }
 
 
