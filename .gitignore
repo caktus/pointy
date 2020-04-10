@@ -3,3 +3,5 @@ frontend/node_modules/
 env/
 backend/db.sqlite3
 *.py[co]
+
+deploy/roles
