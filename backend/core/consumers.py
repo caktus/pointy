@@ -25,6 +25,9 @@ class PointyHome(JsonWebsocketConsumer):
             self.channel_name
         )
 
+    def pointy_state(self, event):
+        self.send(text_data=json.dumps(event))
+
     def receive_json(self, content, **kwargs):
         if content["type"] == "request_pointy_state":
             self.send(json.dumps(build_pointy_state()))
