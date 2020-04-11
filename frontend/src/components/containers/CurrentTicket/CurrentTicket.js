@@ -1,8 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { CurrentTicketStyled } from './CurrentTicket.styled';
+import {
+  CurrentTickerWrapper,
+  TicketName, 
+  CurrentTicketStyled,
+} from "./CurrentTicket.styled";
+
+import { AnimatePresence } from 'framer-motion';
 
 // Context
 import { RoomContext } from '../../pages/RoomPage/RoomPage';
+
+// Const
+import { LIST_VARIANTS } from "../../../styles/animations";
 
 // Children
 import VoteValue from '../VoteValue/VoteValue';
@@ -26,18 +35,34 @@ const CurrentTicket = () => {
   }
 
   return (
-    <CurrentTicketStyled>
-      {room.values.map(value => {
-        return (
-          <VoteValue
-            key={value}
-            value={value}
-            selected={getSelectedState(value)}
-            handleSelect={getHandleSelect(value)}
-          />
-        );
-      })}
-    </CurrentTicketStyled>
+    <CurrentTickerWrapper>
+      <AnimatePresence>
+        <TicketName
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {room.ticket.name}
+        </TicketName>
+      </AnimatePresence>
+      <CurrentTicketStyled
+        initial="initial"
+        animate="enter"
+        exit="exit"
+        variants={LIST_VARIANTS}
+      >
+        {room.values.map((value) => {
+          return (
+            <VoteValue
+              key={value}
+              value={value}
+              selected={getSelectedState(value)}
+              handleSelect={getHandleSelect(value)}
+            />
+          );
+        })}
+      </CurrentTicketStyled>
+    </CurrentTickerWrapper>
   );
 }
 

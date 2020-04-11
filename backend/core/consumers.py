@@ -90,12 +90,13 @@ class PointySession(JsonWebsocketConsumer):
                 ruser.vote = vote
                 ruser.save()
                 publish_room = True
-                if room.phase == "voting" and not room.users.filter(vote="").exists():
+                if room.phase == "voting" and not room.users.exclude(username=room.admin_name).filter(vote="").exists():
                     room.phase = "reconciliation"
                     room_fields.append("phase")
                 elif room.phase == "reconciliation":
-                    vote_values = room.users.values_list("vote", flat=True).distinct()
-                    if vote_values.count() == 1:
+                    non_admin_users = room.users.exclude(username=room.admin_name)
+                    vote_values = non_admin_users.values_list("vote", flat=True).distinct()
+                    if vote_values.count() == non_admin_users.count():
                         room.phase = "ticket_creation"
                         room_fields.append("phase")
                         ticket = room.tickets.order_by('-last_update_dt').first()
@@ -130,7 +131,7 @@ def build_pointy_state():
         "type": "pointy_state",
         "message": {
             "rooms": [
-                {"name": t[0], "session_id": t[1]} for t in PointyRoom.objects.values_list("name", "session_id")
+                {"name": t[0], "session_id": t[1]} for t in PointyRoom.objects.order_by('-last_access_dt').values_list("name", "session_id")
             ],
             "values_templates":
                 [{"id": key, "name": value["name"]} for key, value in VALUES_TEMPLATES.items()]

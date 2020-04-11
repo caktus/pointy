@@ -8,8 +8,10 @@ export default function phaseRouter(phase) {
     switch (phase) {
       case PHASES.TICKET_CREATION:
         return <TicketCreation />;
-      case PHASES.VOTING || PHASES.RECONCILIATION:
+      case PHASES.VOTING:
         return <CurrentTicket />;
+      case PHASES.RECONCILIATION:
+        return <CurrentTicket />; 
       default:
         return null;
     }

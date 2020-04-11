@@ -11,7 +11,13 @@ const PreviousTickets = props => {
 
   return (
     <PreviousTicketsStyled>
-      {room.prev_tickets && room.prev_tickets.map(ticket => <PrevTicket key={ticket.name} ticket={ticket} />)}
+      {room.prev_tickets &&
+        room.prev_tickets.map((ticket) => (
+            <PrevTicket 
+              key={ticket.name} 
+              ticket={ticket} 
+            />
+        ))}
     </PreviousTicketsStyled>
   );
 }

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
-export const PrevTicketStyled = styled.div`
+export const PrevTicketStyled = styled(motion.div)`
     display: flex;
     flex-direction: column;
     align-items: center;

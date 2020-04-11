@@ -5,19 +5,14 @@ import {
   RoomNameStyled,
   RoomContentWrapper,
   RoomContentTop,
-  WaitingForTicket,
 } from "./RoomContent.styled";
-
 
 // Context
 import { RoomContext } from "../../pages/RoomPage/RoomPage";
 
 // Children
 import UserStatusList from './UserStatusList/UserStatusList';
-// import CurrentTicket from '../CurrentTicket/CurrentTicket';
-// import PointySpinner from '../../elements/PointySpinner/PointySpinner';
 import PreviousTickets from '../PreviousTickets/PreviousTickets';
-// import { isEmpty } from '../../../util/isEmpty';
 import phaseRouter from './PhaseRouter';
 
 export const PHASES = {
@@ -28,6 +23,7 @@ export const PHASES = {
 
 const RoomContent = props => {
   const { room, user } = useContext(RoomContext);
+  console.log('room in room content: ', room)
   return (
     <RoomContentStyled>
       <RoomNameStyled>{room.name}</RoomNameStyled>

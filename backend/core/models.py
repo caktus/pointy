@@ -36,6 +36,11 @@ class PointyRoom(models.Model):
             "votes": {u.username: u.vote for u in self.users.all()}
         }
 
+    def save(self, *args, **kwargs): 
+        latest_rooms = PointyRoom.objects.order_by('-last_access_dt')[:10].values_list("pk", flat=True)
+        PointyRoom.objects.exclude(pk__in=list(latest_rooms)).delete()
+        super(PointyRoom, self).save(*args, **kwargs) 
+
 
 class RoomUser(models.Model):
     room = models.ForeignKey(PointyRoom, related_name="users", on_delete=models.CASCADE)

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { colorPrimary } from '../../../../styles/colors';
+import { colorPrimary, colorGrey } from '../../../../styles/colors';
 
 export const UserStatusListStyled = styled(motion.ul)`
     display: flex;
@@ -10,6 +10,6 @@ export const UserStatusListStyled = styled(motion.ul)`
 
 export const AdminUserStyled = styled.li`
     margin-left: 4rem;
-    color: ${colorPrimary};
+    color: ${(props) => props.current ? colorPrimary : colorGrey};
     font-weight: bold;
 `;
