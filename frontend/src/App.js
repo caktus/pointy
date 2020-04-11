@@ -13,8 +13,6 @@ import GlobalHeader from "./components/elements/GlobalHeader/GlobalHeader";
 import AsyncStartPage from "./components/pages/StartPage/AsyncStartPage";
 import AsyncRoomPage from './components/pages/RoomPage/AsyncRoomPage';
 
-export const MainContext = createContext();
-
 function App() {
   const [user, setUser] = useState();
   // 🥞
@@ -24,7 +22,6 @@ function App() {
       <BrowserRouter>
         <AppStyled>
           <AppWrapperStyled>
-            <MainContext.Provider value={{ user, setUser }}>
               <GlobalHeader />
               <Switch>
                 <Route exact path="/">
@@ -34,7 +31,6 @@ function App() {
                   <AsyncRoomPage />
                 </ConnectedRoute>
               </Switch>
-            </MainContext.Provider>
           </AppWrapperStyled>
         </AppStyled>
       </BrowserRouter>

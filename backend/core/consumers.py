@@ -85,7 +85,7 @@ class PointySession(JsonWebsocketConsumer):
         elif event_type == "vote" and room.phase != "ticket_creation":
             username = message.get("user")
             vote = message.get("point")
-            ruser = room.users.filter(username=username)
+            ruser = room.users.filter(username=username).first()
             if ruser and vote and str(vote) != ruser.vote:
                 ruser.vote = vote
                 ruser.save()

@@ -7,6 +7,8 @@ export const EVENT_TYPES = {
 
   'room_update': 'room_update',
   'join_room': 'join_room',
+  'ticket_created': 'ticket_created',
+  'vote': 'vote',
 }
 
 class WebSocketService {

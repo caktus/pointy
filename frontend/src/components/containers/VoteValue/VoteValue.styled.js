@@ -8,9 +8,9 @@ export const VoteValueStyled = styled(Card)`
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
+    cursor: ${(props) => props.interactive ? 'pointer' : 'default'};
 
-    background-color: ${props => props.selected ? colorPrimary : colorBackground };
+    background-color: ${(props) => props.selected ? colorPrimary : colorBackground};
 `;
 
 export const ValueStyled = styled.h2`

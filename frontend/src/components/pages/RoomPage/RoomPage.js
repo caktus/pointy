@@ -11,6 +11,7 @@ import { useSessionSocket } from "../../../hooks/useSocket";
 import PointySpinner from "../../elements/PointySpinner/PointySpinner";
 import RoomContent from "../../containers/RoomContent/RoomContent";
 import { EVENT_TYPES } from "../../../services/WebSocket";
+import { getUserFromLS } from "../../../util/localStorageUser";
 
 
 export const RoomContext = createContext();
@@ -18,8 +19,14 @@ export const RoomContext = createContext();
 const RoomPage = props => {
   let { sessionId } = useParams()
   const { state: routerState } = useLocation(); 
+  const [user, setUser] = useState();
   const [room, setRoom] = useState();
   const { publish, subscribe } = useSessionSocket();
+
+  useEffect(() => {
+    const user = getUserFromLS();
+    setUser(user);
+  }, []);
 
   useEffect(() => {
     subscribe(EVENT_TYPES.room_update, message => {
@@ -39,6 +46,7 @@ const RoomPage = props => {
     room,
     publish,
     subscribe,
+    user
   };
 
   if (!routerState || !routerState.username || !sessionId) return <Redirect to="/" />;

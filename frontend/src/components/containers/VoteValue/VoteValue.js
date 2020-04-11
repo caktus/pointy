@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { VoteValueStyled, ValueStyled } from "./VoteValue.styled";
+import { RoomContext } from '../../pages/RoomPage/RoomPage';
+import { getUserFromLS } from '../../../util/localStorageUser';
 
 const VoteValue = ({ value, selected, handleSelect }) => {
+  const { publish } = useContext(RoomContext)
 
   const handleVote = () => {
-    handleSelect();
-    // publish('vote') w/ user and whatever else
+    if (handleSelect) {
+      handleSelect();
+      publish('vote', {
+        user: getUserFromLS(),
+        point: value
+      })
+    };
   }
 
   return (
-    <VoteValueStyled selected={selected} onClick={handleVote}>
+    <VoteValueStyled selected={selected} onClick={handleVote} interactive={handleSelect}>
       <ValueStyled selected={selected}>{value}</ValueStyled>
     </VoteValueStyled>
   );
