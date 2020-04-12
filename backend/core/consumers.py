@@ -96,7 +96,7 @@ class PointySession(JsonWebsocketConsumer):
                 elif room.phase == "reconciliation":
                     non_admin_users = room.users.exclude(username=room.admin_name)
                     vote_values = non_admin_users.values_list("vote", flat=True).distinct()
-                    if vote_values.count() == non_admin_users.count():
+                    if vote_values.count() == 1:
                         room.phase = "ticket_creation"
                         room_fields.append("phase")
                         ticket = room.tickets.order_by('-last_update_dt').first()
