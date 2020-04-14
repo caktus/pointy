@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StartPageStyled,
   StartPageUsername,
@@ -10,38 +10,47 @@ import {
 } from "./StartPage.styled";
 import { motion } from "framer-motion";
 import Input from '../../elements/Input/Input';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { SPRING } from '../../../styles/animations';
 
+
 // Hooks
-import useSocket from '../../../hooks/useSocket';
+import { useHomeSocket } from '../../../hooks/useSocket';
+import { EVENT_TYPES } from '../../../services/WebSocket';
+import NewRoomPage from '../NewRoomPage/NewRoomPage';
+import { setUserToLS } from '../../../util/localStorageUser';
 
-// TODO: REMOVE
-const rooms = [
-  {
-    name: "Scarlet Crown Backlog Grooming 4/2/2020",
-    room: "scarlet_crown_backlog_grooming",
-  },
-  { 
-    name: "Disco Sprint Planning 4/9/2020", 
-    room: "disco_sprint_planning" 
-  },
-];
 
-const StartPage = props => {
+const StartPage = () => {
   const history = useHistory();
+  const { publish, subscribe } = useHomeSocket();
   const [username, setUsername] = useState('');
+  const [rooms, setRooms] = useState([]);
+  const [valueTemplates, setValueTemplates] = useState([]);
   const [errors, setErrors] = useState({});
-
-  const { connected, publish, subscribe } = useSocket();
-
+  const [view, setView] = useState('start');
+  /**
+   *  Subscribe to "pointy_state" updates, 
+   *  including new rooms added and current ValueTemplates
+   **/ 
   useEffect(() => {
-    if (connected) {
-      console.log('connected!!1')
-      publish("test_event", { message: "stuff" });
-    }
-  }, [connected])
+    subscribe(EVENT_TYPES.pointy_state, data => {
+      console.log('data tho: ', data);
+      setRooms(data.rooms);
+      setValueTemplates(data.values_templates);
+    });
+  }, []);
+
+  /**
+   *  Publish "request_pointy_state" 
+   *  Effectively, "Somebody just joined and needs initial point_state"
+   **/ 
+  useEffect(() => {
+    publish(EVENT_TYPES.request_pointy_state, {});
+  }, []);
+
+
 
   const handleSetUsername = e => {
     setErrors({
@@ -52,7 +61,7 @@ const StartPage = props => {
   }
   
   const handleCreateNewSession = () => {
-    history.push("/new", { username });
+    setView('newSession');
   }
 
   const handleOptionSelected = session => {
@@ -60,48 +69,61 @@ const StartPage = props => {
       return setErrors({ ...errors, username: "You must provide a username"})
     } 
 
-    if (!session) return handleCreateNewSession();
+    if (!session) return handleCreateNewSession(); 
+    setUserToLS(username)
     history.push(`/${session}`, { username });
   }
 
-  return (
-    <StartPageStyled>
-      <h1>Welcome to Pointy!</h1>
+  if (view === 'newSession') {
+    return (
+      <NewRoomPage
+        rooms={rooms}
+        publish={publish}
+        username={username}
+        valueTemplates={valueTemplates}
+      />
+    );
+  }
+  if (view === 'start') {
+    return (
+      <StartPageStyled>
+        <h1>Welcome to Pointy!</h1>
 
-      <StartPageUsername>
-        <Input
-          type="text"
-          label="username"
-          value={username}
-          onChange={handleSetUsername}
-          maxLength="23"
-          errors={errors.username || []}
-        />
-      </StartPageUsername>
+        <StartPageUsername>
+          <Input
+            type="text"
+            label="username"
+            value={username}
+            onChange={handleSetUsername}
+            maxLength="23"
+            errors={errors.username || []}
+          />
+        </StartPageUsername>
 
-      <StartPageActionCards>
-        <CardStyled>
-          <motion.h3 layoutTransition={SPRING}>Join a session</motion.h3>
-          <StartPageRoomsListStyled>
-            {rooms.map((room) => (
-              <StartPageRoomStyled key={room.room} layoutTransition={SPRING}>
-                <p onClick={() => handleOptionSelected(room.room)}>
-                  {room.name}
-                </p>
-              </StartPageRoomStyled>
-            ))}
-          </StartPageRoomsListStyled>
-        </CardStyled>
+        <StartPageActionCards>
+          <CardStyled>
+            <motion.h3 layoutTransition={SPRING}>Join a session</motion.h3>
+            <StartPageRoomsListStyled>
+              {rooms && rooms.map((room) => (
+                <StartPageRoomStyled key={room.session_id} layoutTransition={SPRING}>
+                  <p onClick={() => handleOptionSelected(room.session_id)}>
+                    {room.name}
+                  </p>
+                </StartPageRoomStyled>
+              ))}
+            </StartPageRoomsListStyled>
+          </CardStyled>
 
-        <CardStyled onClick={() => handleOptionSelected()}>
-          <CreateSessionCardStyled>
-            <motion.h3 layoutTransition={SPRING}>Create a new session</motion.h3>
-            <motion.p layoutTransition={SPRING}>(You'll be the administrator)</motion.p>
-          </CreateSessionCardStyled>
-        </CardStyled>
-      </StartPageActionCards>
-    </StartPageStyled>
-  );
+          <CardStyled onClick={() => handleOptionSelected()}>
+            <CreateSessionCardStyled>
+              <motion.h3 layoutTransition={SPRING}>Create a new session</motion.h3>
+              <motion.p layoutTransition={SPRING}>(You'll be the administrator)</motion.p>
+            </CreateSessionCardStyled>
+          </CardStyled>
+        </StartPageActionCards>
+      </StartPageStyled>
+    )
+  }
 }
 
 export default StartPage;

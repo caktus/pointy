@@ -40,21 +40,24 @@ export const CardStyled = styled(Card)`
     
     cursor: ${props => props.onClick ? 'pointer' : 'default'};
     overflow: hidden;
+
+    h3 {
+        margin: 3rem 0 1rem 0;
+        text-align: center;
+    }
 `;
 
 export const StartPageRoomsListStyled = styled.ul`
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 1rem 1rem 0 1rem;
     overflow-y: scroll;
 `;
 
 export const StartPageRoomStyled = styled(motion.li)`
-    margin-bottom: 1.5rem;
-
     p {
+        margin-bottom: .5rem;
         color: ${colorBlue};
         cursor: pointer;
     }

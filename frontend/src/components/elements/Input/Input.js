@@ -18,7 +18,7 @@ const Input = ({ label, icon, errors, className, ...props }) => {
 
   useEffect(() => {
     const isBaseError = typeof errors === 'string';
-    if (isBaseError || props.value && errors && errors.length > 0) {
+    if (isBaseError || (props.value && errors && errors.length > 0)) {
       setHasErrors(true);
     }
     else setHasErrors(false);
@@ -52,25 +52,24 @@ const Input = ({ label, icon, errors, className, ...props }) => {
       <AnimatePresence>
         {hasErrors && (
           <ErrorsStyled
+            key="inputErrors"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ delayChildren: 0.5 }}
           >
-            {errors &&
-            typeof errors === 'string' 
-                ? (
-                    <ErrorStyled key={errors}>
-                        <ErrorIcon icon={faExclamationCircle} />
-                        {errors}
-                    </ErrorStyled>
-                ) : (
-                errors.map((error) => (
+            {errors && typeof errors === "string" ? (
+              <ErrorStyled key={errors}>
+                <ErrorIcon icon={faExclamationCircle} />
+                {errors}
+              </ErrorStyled>
+            ) : (
+              errors.map((error) => (
                 <ErrorStyled key={error}>
-                    <ErrorIcon icon={faExclamationCircle} />
-                    {error}
+                  <ErrorIcon icon={faExclamationCircle} />
+                  {error}
                 </ErrorStyled>
-                ))
+              ))
             )}
           </ErrorsStyled>
         )}

@@ -53,6 +53,8 @@ export const InputStyled = styled.input`
   border-color: ${(props) => (props.hasErrors ? colorCaution : colorGrey)};
   border-radius: 3px;
 
+  margin-bottom: 1.5rem;
+
   font-size: 2rem;
   width: 24rem;
   height: 3rem;

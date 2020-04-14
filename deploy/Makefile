@@ -10,4 +10,4 @@ build-api:
 	docker-compose build api
 	docker tag pointy_api:latest pointy_api:${API_TAG}
 	docker-compose build web
-	docker tag pointy_web:latest pointy_api:${WEB_TAG}
+	docker tag pointy_web:latest pointy_web:${WEB_TAG}

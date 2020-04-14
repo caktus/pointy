@@ -1,50 +1,39 @@
-import React from 'react';
+import React, { useState, createContext } from "react";
 import GlobalStyle from './styles/GlobalStyle';
 import { AppStyled, AppWrapperStyled } from "./App.styled";
 
 // Rotuer
 import { BrowserRouter, Switch,  Route } from "react-router-dom";
-
-// Providers
-import { AppProvider }from './providers/appProvider';
-import { SocketProvider } from "./providers/socketProvider";
+import ConnectedRoute from "./services/ConnectedRoute";
 
 // Components
 import GlobalHeader from "./components/elements/GlobalHeader/GlobalHeader";
 
 // Pages
-import StartPage from './components/pages/StartPage/StartPage';
-import NewRoomPage from './components/pages/NewRoomPage/NewRoomPage';
-import RoomPage from './components/pages/RoomPage/RoomPage';
+import AsyncStartPage from "./components/pages/StartPage/AsyncStartPage";
+import AsyncRoomPage from './components/pages/RoomPage/AsyncRoomPage';
 
 function App() {
-  const appContext = {}
+  const [user, setUser] = useState();
   // 🥞
   return (
     <>
       <GlobalStyle />
-      <SocketProvider path="/pointy/">
-        <BrowserRouter>
-          <AppProvider value={appContext}>
-            <AppStyled>
-              <AppWrapperStyled>
-                <GlobalHeader />
-                <Switch>
-                  <Route exact path="/">
-                    <StartPage />
-                  </Route>
-                  <Route path="/new">
-                    <NewRoomPage />
-                  </Route>
-                  <Route path="/:sessionId">
-                    <RoomPage />
-                  </Route>
-                </Switch>
-              </AppWrapperStyled>
-            </AppStyled>
-          </AppProvider>
-        </BrowserRouter>
-      </SocketProvider>
+      <BrowserRouter>
+        <AppStyled>
+          <AppWrapperStyled>
+              <GlobalHeader />
+              <Switch>
+                <Route exact path="/">
+                  <AsyncStartPage />
+                </Route>
+                <ConnectedRoute socket="session" path="/:sessionId">
+                  <AsyncRoomPage />
+                </ConnectedRoute>
+              </Switch>
+          </AppWrapperStyled>
+        </AppStyled>
+      </BrowserRouter>
     </>
   );
 }

@@ -10,13 +10,13 @@ export const UserListItemStyled = styled(motion.li)`
 `;
 
 
-export const UserVote = styled.p`
+export const UserVote = styled(motion.p)`
     margin: 0;
     color: ${colorPrimary};
     font-size: 2.5rem;
 `;
 
-export const LineStyled = styled.span`
+export const LineStyled = styled(motion.span)`
     border-bottom: 1px solid ${colorGreyLight};
     width: 1.5rem;
     height: 0px;
@@ -24,7 +24,7 @@ export const LineStyled = styled.span`
 
 export const UserName = styled.p`
     margin: 0 0 0 1.5rem;
-    color: ${colorGrey};
+    color: ${props => props.current ? colorPrimary : colorGrey};
     display: inline-block;
     text-align: right;
 `;

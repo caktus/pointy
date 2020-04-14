@@ -32,6 +32,7 @@ services:
     environment:
       REDIS_HOST: "redis://redis:6379/0"
       SECRET_KEY: "alsdjfalsjfd"
+      POSTGRES_DATABASE_URL:
     ports:
       - "8000:8000"
   web:
