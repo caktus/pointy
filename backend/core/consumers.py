@@ -93,7 +93,7 @@ class PointySession(JsonWebsocketConsumer):
                 if room.phase == "voting" and not room.users.exclude(username=room.admin_name).filter(vote="").exists():
                     room.phase = "reconciliation"
                     room_fields.append("phase")
-                elif room.phase == "reconciliation":
+                if room.phase == "reconciliation":
                     non_admin_users = room.users.exclude(username=room.admin_name)
                     vote_values = non_admin_users.values_list("vote", flat=True).distinct()
                     if vote_values.count() == 1:
