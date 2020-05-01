@@ -12,9 +12,13 @@ import {
 import { AnimatePresence } from "framer-motion";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
-const Input = ({ label, icon, errors, className, ...props }) => {
+const Input = ({ label, icon, errors, className, onEnterKey, ...props }) => {
   const [labelTranslated, setLabelTranslated] = useState(false);
   const [hasErrors, setHasErrors] = useState(false);
+
+  useEffect(() => {
+    setLabelTranslated(props.value)
+  }, [props.value]);
 
   useEffect(() => {
     const isBaseError = typeof errors === 'string';
@@ -32,6 +36,13 @@ const Input = ({ label, icon, errors, className, ...props }) => {
     setLabelTranslated(true);
   };
 
+  const handleKeyUp = e => {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      if (onEnterKey) onEnterKey();
+    }
+  };
+
   return (
     <>
       <InputWrapper className={className}>
@@ -42,6 +53,7 @@ const Input = ({ label, icon, errors, className, ...props }) => {
           labelTranslated={labelTranslated}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onKeyUp={handleKeyUp}
         />
         {label && (
           <LabelStyled hasErrors={hasErrors} labelTranslated={labelTranslated}>

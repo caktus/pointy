@@ -4,6 +4,7 @@ export const EVENT_TYPES = {
   'request_pointy_state': 'request_pointy_state',
   'pointy_state': 'pointy_state',
   'room_created': 'room_created',
+  'user_disconnect': 'user_disconnect',
 
   'room_update': 'room_update',
   'join_room': 'join_room',
@@ -17,7 +18,6 @@ class WebSocketService {
   reconnectAttempts = 0;
 
   static getInstance() {
-    console.log('------>>>> getInstance()')
     if (!WebSocketService.instance) {
       WebSocketService.instance = new WebSocketService();
     }
@@ -27,6 +27,8 @@ class WebSocketService {
   constructor() {
     this.url = "";
     this.socket = null;
+    this.user = null;
+
     this.connect = this.connect.bind(this);
     this._fallbackCallback = this._fallbackCallback.bind(this);
     this.close = this.close.bind(this);
@@ -38,13 +40,11 @@ class WebSocketService {
   }
 
   connect(url) {
-    console.log("------>>>> connect()");
     this.reconnectAttempts = this.reconnectAttempts + 1;
     this.url = url;
     this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
-      console.log("WebSocket open at: ",  url);
       this.reconnectAttempts = 0;
       return true;
     };
@@ -54,17 +54,17 @@ class WebSocketService {
     };
 
     this.socket.onerror = (e) => {
-      console.log(e.message);
+      console.warn('SOCKET ERROR');
+      console.warn(e.message);
     };
 
     this.socket.onclose = () => {
-      console.log("WebSocket closed. Attempting to reconnect.");
       if (this.reconnectAttempts < config.MAX_RECONNECT_ATTEMPTS) {
         let timeout = setTimeout(() => {
           this.connect(this.url);
         }, config.RECONNECT_ATTEMPT_INVERVAL);
       } else {
-        console.log(
+        console.warn(
           "Reached maxium reconnect attempts: ",
           config.MAX_RECONNECT_ATTEMPTS
         );
@@ -72,8 +72,15 @@ class WebSocketService {
     };
   }
 
+  setUser(user) {
+    window.onbeforeunload = () => {
+      this.socket.send(JSON.stringify({ type: EVENT_TYPES.user_disconnect, message: { user }}))
+    }
+    this.user = user
+  }
+
   _fallbackCallback(eventName) {
-    console.log(`Received "${eventName}" event, but no callback was registered for this event`)
+    console.warn(`Received "${eventName}" event, but no callback was registered for this event`)
   }
 
   close() {
@@ -89,16 +96,14 @@ class WebSocketService {
   }
 
   publish(eventName, data) {
-    console.log('publishing: ', eventName, data)
     const msg = { type: eventName, message: data };
     this.socket.send(JSON.stringify(msg));
   }
 
   _handleNewMessage(data) {
-    console.log('message recieved with: ', data)
     const { type, message } = JSON.parse(data);
     if (!this.callbacks[EVENT_TYPES[type]]) {
-      console.log(`WebSocket instance recieved unhandled event type "${type}"`);
+      console.warn(`WebSocket instance recieved unhandled event type "${type}"`);
     } else {
        this.callbacks[EVENT_TYPES[type]](message);
     }
@@ -114,11 +119,9 @@ class WebSocketService {
     this.reconnectAttempts++;
     setTimeout(function () {
       if (socket.readyState === WebSocket.OPEN) {
-        console.log("Connection is made");
         callback()
         return
       } else if (this.reconnectAttempts < 1000) {
-          console.log("wait for connection...");
           recursion(callback);
         }
     }, 100);

@@ -94,6 +94,7 @@ const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
             onChange={handleInput}
             maxLength="50"
             errors={errors.sessionName}
+            onEnterKey={handleCreateSession}
           />
 
           <Select options={valueTemplates} value={template} onChange={handleTemplateSelect} error={errors.template}/>

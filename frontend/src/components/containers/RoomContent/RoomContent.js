@@ -22,8 +22,7 @@ export const PHASES = {
 }
 
 const RoomContent = props => {
-  const { room, user } = useContext(RoomContext);
-  console.log('room in room content: ', room)
+  const { room } = useContext(RoomContext);
   return (
     <RoomContentStyled>
       <RoomNameStyled>{room.name}</RoomNameStyled>

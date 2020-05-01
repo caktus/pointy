@@ -1,15 +1,21 @@
 import React, { useContext } from 'react';
 import { VoteValueStyled, ValueStyled } from "./VoteValue.styled";
-import { RoomContext } from '../../pages/RoomPage/RoomPage';
+
+// LS
 import { getUserFromLS } from '../../../util/localStorageUser';
+
+// Constants
 import { PHASES } from '../RoomContent/RoomContent';
 import { motion } from 'framer-motion';
 import { LIST_ITEM_VARIANTS } from '../../../styles/animations';
 
+// Context
+import { RoomContext } from '../../pages/RoomPage/RoomPage';
+
 const VoteValue = ({ value, selected, handleSelect }) => {
   const { publish, room } = useContext(RoomContext)
 
-  const handleVote = () => {
+  function handleVote() {
     if (handleSelect) {
       handleSelect();
       publish('vote', {
@@ -33,7 +39,6 @@ const VoteValue = ({ value, selected, handleSelect }) => {
           if (parseInt(vote, 10) === value) votes ++
         }
       }
-      console.log(value, ": ", (votes / userCount) * 100);
       return (votes / userCount) * 100
     }
   }

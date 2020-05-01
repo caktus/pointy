@@ -68,9 +68,17 @@ class PointySession(JsonWebsocketConsumer):
         event_type = content.get("type")
         message = content.get("message", {})
 
+        if event_type == "user_disconnect":
+            user = message.get('user')
+            if (user):
+                RoomUser.objects.filter(room=room, username=user).first().delete()
+                publish_room = True
+
         if event_type == "join_room":
-            username = message.get("user")
-            _ruser, created = RoomUser.objects.get_or_create(room=room, username=username)
+            user = message.get("user")
+            _ruser, created = RoomUser.objects.get_or_create(room=room, username=user)
+            self.username = message.get("user")
+            # breakpoint()
             if created:
                 publish_room = True
             else:

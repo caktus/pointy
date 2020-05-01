@@ -49,6 +49,7 @@ const TicketCreation = () => {
         value={ticketName}
         onChange={e => setTicketName(e.target.value)}
         maxLength="100"
+        onEnterKey={handleCreateTicket}
       />
       <ButtonStyled onClick={handleCreateTicket}>Create ticket</ButtonStyled>
     </TicketCreationStyled>
