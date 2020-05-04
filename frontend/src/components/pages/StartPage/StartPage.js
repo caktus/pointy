@@ -19,13 +19,13 @@ import { SPRING } from '../../../styles/animations';
 import { useHomeSocket } from '../../../hooks/useSocket';
 import { EVENT_TYPES } from '../../../services/WebSocket';
 import NewRoomPage from '../NewRoomPage/NewRoomPage';
-import { setUserToLS } from '../../../util/localStorageUser';
+import { setUserToLS, getUserFromLS } from '../../../util/localStorageUser';
 
 
 const StartPage = () => {
   const history = useHistory();
   const { publish, subscribe } = useHomeSocket();
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(getUserFromLS());
   const [rooms, setRooms] = useState([]);
   const [valueTemplates, setValueTemplates] = useState([]);
   const [errors, setErrors] = useState({});
@@ -36,7 +36,6 @@ const StartPage = () => {
    **/ 
   useEffect(() => {
     subscribe(EVENT_TYPES.pointy_state, data => {
-      console.log('data tho: ', data);
       setRooms(data.rooms);
       setValueTemplates(data.values_templates);
     });

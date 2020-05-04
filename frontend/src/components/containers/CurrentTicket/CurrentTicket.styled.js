@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { colorGrey } from '../../../styles/colors';
+import { colorGrey, colorGreyLight } from '../../../styles/colors';
 import { motion } from 'framer-motion';
 
 export const CurrentTickerWrapper = styled.div`
@@ -14,6 +14,11 @@ export const TicketName = styled(motion.h2)`
     text-align: center;
     font-size: 4rem;
     color: ${colorGrey};
+`;
+
+export const PhaseName = styled(motion.span)`
+    color: ${colorGreyLight};
+    margin-left: 2rem;
 `;
 
 export const CurrentTicketStyled = styled(motion.div)`

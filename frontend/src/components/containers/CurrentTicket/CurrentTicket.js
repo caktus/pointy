@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import {
   CurrentTickerWrapper,
   TicketName, 
+  PhaseName,
   CurrentTicketStyled,
 } from "./CurrentTicket.styled";
 
@@ -43,6 +44,14 @@ const CurrentTicket = () => {
           exit={{ opacity: 0 }}
         >
           {room.ticket.name}
+          <PhaseName
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ ease: "easeOut", duration: 2 }}
+          >
+            [{room.phase}]
+          </PhaseName>
         </TicketName>
       </AnimatePresence>
       <CurrentTicketStyled

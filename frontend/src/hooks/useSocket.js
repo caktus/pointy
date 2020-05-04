@@ -27,5 +27,5 @@ export const useSessionSocket = () => {
       sessionSocket.waitForSocketConnection(() => sessionSocket.subscribe(eventName, callback));
     }
 
-    return { publish, subscribe };
+  return { sessionSocket, publish, subscribe };
 };

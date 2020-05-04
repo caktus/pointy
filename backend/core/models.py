@@ -21,7 +21,7 @@ class PointyRoom(models.Model):
     def update_message(self):
         ticket_qs = self.tickets.order_by("-last_update_dt")
         ticket = ticket_qs.first()
-        prev_tickets = ticket_qs[1:6]
+        prev_tickets = ticket_qs.exclude(final_vote="")[0:5]
         return {
             "name": self.name,
             "session_id": self.session_id,

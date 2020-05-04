@@ -7,7 +7,7 @@ export const RoomContentStyled = styled.div`
 `;
 
 export const RoomNameStyled = styled.h2`
-    margin: 0;
+    margin: 0 0 1rem 0;
 `;
 
 export const RoomContentWrapper = styled.div`

@@ -71,9 +71,17 @@ class PointySession(JsonWebsocketConsumer):
         event_type = content.get("type")
         message = content.get("message", {})
 
+        if event_type == "user_disconnect":
+            user = message.get('user')
+            if (user):
+                RoomUser.objects.filter(room=room, username=user).first().delete()
+                publish_room = True
+
         if event_type == "join_room":
-            username = message.get("user")
-            _ruser, created = RoomUser.objects.get_or_create(room=room, username=username)
+            user = message.get("user")
+            _ruser, created = RoomUser.objects.get_or_create(room=room, username=user)
+            self.username = message.get("user")
+            # breakpoint()
             if created:
                 publish_room = True
             else:
@@ -96,10 +104,10 @@ class PointySession(JsonWebsocketConsumer):
                 if room.phase == "voting" and not room.users.exclude(username=room.admin_name).filter(vote="").exists():
                     room.phase = "reconciliation"
                     room_fields.append("phase")
-                elif room.phase == "reconciliation":
+                if room.phase == "reconciliation":
                     non_admin_users = room.users.exclude(username=room.admin_name)
                     vote_values = non_admin_users.values_list("vote", flat=True).distinct()
-                    if vote_values.count() == non_admin_users.count():
+                    if vote_values.count() == 1:
                         room.phase = "ticket_creation"
                         room_fields.append("phase")
                         ticket = room.tickets.order_by('-last_update_dt').first()

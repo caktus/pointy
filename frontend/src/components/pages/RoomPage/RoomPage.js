@@ -21,7 +21,7 @@ const RoomPage = props => {
   const { state: routerState } = useLocation(); 
   const [user, setUser] = useState();
   const [room, setRoom] = useState();
-  const { publish, subscribe } = useSessionSocket();
+  const { sessionSocket, publish, subscribe } = useSessionSocket();
 
   useEffect(() => {
     const user = getUserFromLS();
@@ -30,17 +30,18 @@ const RoomPage = props => {
 
   useEffect(() => {
     subscribe(EVENT_TYPES.room_update, message => {
-      console.log('response from room_update: ', message)
       setRoom(message);
     });
   }, []);
 
   useEffect(() => {
+    const thisUser = routerState ? routerState.username : user
+    sessionSocket.setUser(thisUser)
     publish(EVENT_TYPES.join_room, {
       session_id: sessionId,
-      user: routerState && routerState.username,
+      user: thisUser
     });
-  }, []);
+  }, [user]);
 
   const roomContext = {
     room,
