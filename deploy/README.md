@@ -55,16 +55,10 @@ http://localhost:8000 you should see the site in it's current state.
 
 ### Deploy
 
-If you've just built the image above, the easiest way to deploy it is using:
+For a full deploy, run:
 
 ```sh
-    inv staging image.generate-tag deploy
-```
-
-However, you can also specify any image tag using:
-
-```sh
-    inv staging deploy --tag=develop-abcdefgr
+    inv production api image deploy web image deploy
 ```
 
 
