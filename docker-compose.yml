@@ -37,6 +37,7 @@ services:
       DOMAIN: localhost
       DJANGO_MANAGEPY_MIGRATE: "on"
       ENVIRONMENT: local
+      SESSION_COOKIE_SECURE: "False"
     ports:
       - "8000:8000"
   web:
