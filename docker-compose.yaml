@@ -38,6 +38,8 @@ services:
       DJANGO_MANAGEPY_MIGRATE: "on"
       ENVIRONMENT: local
       SESSION_COOKIE_SECURE: "False"
+      EMAIL_HOST: mailhog
+      EMAIL_PORT: 1025
     ports:
       - "8000:8000"
   web:
@@ -46,3 +48,5 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:80"
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
