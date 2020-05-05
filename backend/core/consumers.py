@@ -1,4 +1,5 @@
 import json
+import logging
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
@@ -9,6 +10,9 @@ from django.utils import timezone
 HOME_GROUP_NAME = "PointyHome"
 
 from .models import VALUES_TEMPLATES, PointyRoom, RoomUser, RoomTicket
+
+
+logger = logging.getLogger(__name__)
 
 
 class PointyHome(JsonWebsocketConsumer):
