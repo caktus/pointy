@@ -7,3 +7,9 @@ backend/db.sqlite3
 .vscode
 .env.production
 .python-version
+
+# Ansible
+deploy/roles/*
+.vault_pass
+*.retry
+deploy.log
