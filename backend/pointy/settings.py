@@ -20,13 +20,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", '')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-
-ALLOWED_HOSTS = os.getenv('DOMAIN', [])
-
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", 'insecure-key')
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
 
 # Application definition
 
@@ -76,7 +72,20 @@ WSGI_APPLICATION = 'pointy.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = os.getenv('DATABASE_URL', '')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+if os.getenv("DATABASE_URL"):
+    import dj_database_url
+
+    db_from_env = dj_database_url.config(
+        conn_max_age=500, ssl_require=os.getenv("DATABASE_SSL", False),
+    )
+    DATABASES["default"].update(db_from_env)
 
 
 # Password validation
@@ -116,6 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Channels
 ASGI_APPLICATION = 'pointy.routing.application'

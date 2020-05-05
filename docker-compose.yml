@@ -16,8 +16,8 @@ services:
   db:
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
-    restart: always
-    image: postgres:12
+      POSTGRES_DB: pointy
+    image: postgres:12-alpine
     expose:
       - "5432"
     volumes:
@@ -30,9 +30,13 @@ services:
     links:
       - db:db
     environment:
+      DJANGO_SETTINGS_MODULE: pointy.settings_deploy
+      DATABASE_URL: postgres://postgres@db:5432/pointy
       REDIS_HOST: "redis://redis:6379/0"
-      SECRET_KEY: "alsdjfalsjfd"
-      POSTGRES_DATABASE_URL:
+      DJANGO_SECRET_KEY: insecure-dev-key
+      DOMAIN: localhost
+      DJANGO_MANAGEPY_MIGRATE: "on"
+      ENVIRONMENT: local
     ports:
       - "8000:8000"
   web:

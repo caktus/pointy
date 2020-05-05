@@ -1,4 +1,6 @@
 Django==3.0.5
 channels==2.4.0
 channels-redis==2.4.2
-ansible==2.9.6
+psycopg2-binary==2.8.5
+dj-database-url==0.5.0
+whitenoise==5.0.1
