@@ -1,0 +1,20 @@
+env_name: "production"
+
+k8s_ingress_certificate_issuer: letsencrypt-production
+k8s_domain_names:
+  - pointy.caktus-built.com
+
+k8s_container_image: "{{ eks_registry }}/pointy_web"
+k8s_container_name: "web"
+k8s_container_port: 80
+k8s_container_replicas: 1
+k8s_container_ingress_paths:
+  - /
+
+# Only deploy web container from this repo
+k8s_templates:
+  - name: web.yaml.j2
+    state: present
+
+# Disable migrations
+k8s_migrations_enabled: false

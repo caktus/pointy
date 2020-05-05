@@ -9,10 +9,10 @@ init(autoreset=True)
 
 @invoke.task
 def production(c):
-    c.config.env = "production"
-    c.config.namespace = f"pointy-{c.config.env}"
+    c.config.base_env = "production"
+    c.config.namespace = f"pointy-{c.config.base_env}"
     with c.cd("frontend/"):
-        c.run('echo "REACT_APP_WS_HOST_ADDRESS=ws://pointy.caktus-built.com" > .env.production')
+        c.run('echo "REACT_APP_WS_HOST_ADDRESS=wss://pointy.caktus-built.com" > .env.production')
 
 
 @invoke.task
@@ -20,6 +20,7 @@ def api(c):
     c.config.service = "api"
     c.config.app = f"pointy_{c.config.service}"
     c.config.repository = "472354598015.dkr.ecr.us-east-1.amazonaws.com/pointy_api"
+    c.config.env = f"{c.config.base_env}-{c.config.service}"
 
 
 @invoke.task
@@ -27,6 +28,7 @@ def web(c):
     c.config.service = "web"
     c.config.app = f"pointy_{c.config.service}"
     c.config.repository = "472354598015.dkr.ecr.us-east-1.amazonaws.com/pointy_web"
+    c.config.env = f"{c.config.base_env}-{c.config.service}"
 
 
 ns = invoke.Collection()
