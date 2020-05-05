@@ -22,7 +22,8 @@ INSTALLED_APPS.extend(
     ["whitenoise.runserver_nostatic", "django.contrib.staticfiles",]
 )
 
-MIDDLEWARE.remove("django.middleware.security.SecurityMiddleware")
+if "django.middleware.security.SecurityMiddleware" in MIDDLEWARE:
+    MIDDLEWARE.remove("django.middleware.security.SecurityMiddleware")
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
