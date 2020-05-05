@@ -1,0 +1,4 @@
+run:
+  pty: True
+  env:
+    AWS_PROFILE: caktus-cluster

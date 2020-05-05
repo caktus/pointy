@@ -19,12 +19,14 @@ def production(c):
 def api(c):
     c.config.service = "api"
     c.config.app = f"pointy_{c.config.service}"
+    c.config.repository = "472354598015.dkr.ecr.us-east-1.amazonaws.com/pointy_api"
 
 
 @invoke.task
 def web(c):
     c.config.service = "web"
     c.config.app = f"pointy_{c.config.service}"
+    c.config.repository = "472354598015.dkr.ecr.us-east-1.amazonaws.com/pointy_web"
 
 
 ns = invoke.Collection()

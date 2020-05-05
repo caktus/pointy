@@ -1,1 +1,2 @@
+awscli==1.18.39
 -e git+https://github.com/caktus/invoke-kubesae@build-service#egg=invoke-kubesae
