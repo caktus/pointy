@@ -7,7 +7,7 @@ volumes:
 
 services:
   redis:
-    image: redis
+    image: redis:5-alpine
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - prod_redis_data:/data
