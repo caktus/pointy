@@ -1,1 +1,1 @@
--e git+https://github.com/caktus/invoke-kubesae@0.0.3#egg=invoke-kubesae
+-e git+https://github.com/caktus/invoke-kubesae@build-service#egg=invoke-kubesae
