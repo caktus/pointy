@@ -32,7 +32,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: pointy.settings_deploy
       DATABASE_URL: postgres://postgres@db:5432/pointy
-      REDIS_HOST: "redis://redis:6379/0"
+      CHANNELS_HOST: "redis://redis:6379/0"
       DJANGO_SECRET_KEY: insecure-dev-key
       DOMAIN: localhost
       DJANGO_MANAGEPY_MIGRATE: "on"

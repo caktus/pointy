@@ -130,11 +130,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Channels
 ASGI_APPLICATION = 'pointy.routing.application'
 
-BROKER_HOST = os.getenv('BROKER_HOST', "redis://127.0.0.1:6379/0")
+CHANNELS_HOST = os.getenv('CHANNELS_HOST', "redis://127.0.0.1:6379/0")
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [BROKER_HOST]}
+        "CONFIG": {"hosts": [CHANNELS_HOST]}
     }
 }
