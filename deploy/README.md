@@ -31,7 +31,6 @@ By default, the next command will perform the following:
 * Tagging it with the ``{{ branch_name }}-{{ short_commit_sha }}``
 * Pushing the image to ECR so it's accessible to EKS for deployment
 
-
 ```sh
     inv production web image
     inv production api image
@@ -39,18 +38,6 @@ By default, the next command will perform the following:
 
 You should now see the built and tagged image in ``docker images``.  You are going to see
 a ``<none>`` image. This is the node image and should be left in place to shorten build times.
-
-
-#### Test the Docker image locally
-
-You can test the deployable image locally with:
-
-```sh
-  inv image.up
-```
-
-You should see all the supporting containers come up. Then navigate to
-http://localhost:8000 you should see the site in it's current state.
 
 
 ### Deploy
