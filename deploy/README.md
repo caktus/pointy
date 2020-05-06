@@ -18,26 +18,31 @@ To get setup, make sure to install the deploy Python requirements:
 
 ### Build
 
-First, make sure we have access to the ECR registry with ``docker``:
-
-```sh
-    inv aws.docker-login
-```
-
-You should see *Login Succeeded*.
-
 By default, the next command will perform the following:
 * Building the production Docker image
 * Tagging it with the ``{{ branch_name }}-{{ short_commit_sha }}``
 * Pushing the image to ECR so it's accessible to EKS for deployment
 
 ```sh
-    inv production web image
-    inv production api image
+    inv production build-deploy --no-deploy
 ```
 
-You should now see the built and tagged image in ``docker images``.  You are going to see
-a ``<none>`` image. This is the node image and should be left in place to shorten build times.
+You should now see the built and tagged image in ``docker images``. You are
+going to see a ``<none>`` image. This is the node image and should be left in
+place to shorten build times.
+
+
+#### Test the Docker image locally
+
+You can test the deployable image locally with:
+
+```sh
+  inv local build-deploy
+  inv image.up
+```
+
+You should see all the supporting containers come up. Then navigate to
+http://localhost:3000 you should see the site in it's current state.
 
 
 ### Deploy
@@ -45,7 +50,7 @@ a ``<none>`` image. This is the node image and should be left in place to shorte
 For a full deploy, run:
 
 ```sh
-    inv production api image deploy web image deploy
+    inv production build-deploy
 ```
 
 

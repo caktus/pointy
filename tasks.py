@@ -1,10 +1,17 @@
 import invoke
 from colorama import init
 
-from kubesae import *
+import kubesae
 
 
 init(autoreset=True)
+
+
+@invoke.task
+def local(c):
+    c.config.base_env = "local"
+    with c.cd("frontend/"):
+        c.run('rm .env.production', warn=True)
 
 
 @invoke.task
@@ -32,37 +39,40 @@ def web(c):
 
 
 @invoke.task
-def app(c, push=True, deploy=True):
-    # Docker authenciation
-    aws["docker-login"](c)
-    # api: Build, tag, and push container
+def build_deploy(c, push=True, deploy=True):
+    if c.config.base_env == "local":
+        push = False
+    # Build
+    kubesae.image['tag'](c)
     api(c)
-    image['tag'](c)
-    image['build'](c)
-    if push:
-        image['push'](c)
-    # web: Build, tag, and push container
+    kubesae.image['build'](c)
     web(c)
-    image['tag'](c)
-    image['build'](c)
+    kubesae.image['build'](c)
+    # Push
     if push:
-        image['push'](c)
+        # Docker authenciation
+        kubesae.aws["docker-login"](c)
+        api(c)
+        kubesae.image['push'](c)
+        web(c)
+        kubesae.image['push'](c)
     # Deploy
     if push and deploy:
-        deploy["install"](c)
+        kubesae.deploy["install"](c)
         api(c)
-        deploy["deploy"](c)
+        kubesae.deploy["deploy"](c)
         web(c)
-        deploy["deploy"](c)
+        kubesae.deploy["deploy"](c)
 
 
 ns = invoke.Collection()
-ns.add_collection(image)
-ns.add_collection(aws)
-ns.add_collection(deploy)
-ns.add_collection(pod)
+ns.add_collection(kubesae.image)
+ns.add_collection(kubesae.aws)
+ns.add_collection(kubesae.deploy)
+ns.add_collection(kubesae.pod)
 ns.add_task(production)
 ns.add_task(api)
 ns.add_task(web)
-ns.add_task(app)
+ns.add_task(build_deploy)
+ns.add_task(local)
 ns.configure({"run": {"echo": True}})
