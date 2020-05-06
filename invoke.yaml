@@ -1,0 +1,5 @@
+repository: 472354598015.dkr.ecr.us-east-1.amazonaws.com
+run:
+  pty: True
+  env:
+    AWS_PROFILE: caktus-cluster

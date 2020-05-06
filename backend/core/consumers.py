@@ -1,4 +1,5 @@
 import json
+import logging
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
@@ -11,15 +12,21 @@ HOME_GROUP_NAME = "PointyHome"
 from .models import VALUES_TEMPLATES, PointyRoom, RoomUser, RoomTicket
 
 
+logger = logging.getLogger(__name__)
+
+
 class PointyHome(JsonWebsocketConsumer):
     def connect(self):
+        logger.info("Socket connected")
         async_to_sync(self.channel_layer.group_add)(
             HOME_GROUP_NAME,
             self.channel_name
         )
         self.accept()
+        logger.info("Socket accepted")
 
     def disconnect(self, code):
+        logger.info("Socket disconnected")
         async_to_sync(self.channel_layer.group_discard)(
             HOME_GROUP_NAME,
             self.channel_name

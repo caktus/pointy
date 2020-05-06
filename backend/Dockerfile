@@ -45,13 +45,16 @@ WORKDIR /code/
 ADD ./backend/ /code/
 
 # Add any static environment variables needed by Django or your settings file here:
-ENV DJANGO_SETTINGS_MODULE=pointy.settings
+ENV DJANGO_SETTINGS_MODULE=pointy.settings_deploy
+
+# Call collectstatic (customize the following line with the minimal environment variables needed for manage.py to run):
+RUN DATABASE_URL='' ENVIRONMENT='' DJANGO_SECRET_KEY='dummy' DOMAIN='' python manage.py collectstatic --noinput
 
 # Change to a non-root user
 USER ${APP_USER}:${APP_USER}
 
 # Uncomment after creating your docker-entrypoint.sh
-# ENTRYPOINT ["/code/docker-entrypoint.sh"]
+ENTRYPOINT ["/code/docker-entrypoint.sh"]
 
 # Start uWSGI
 CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "pointy.asgi:application"]

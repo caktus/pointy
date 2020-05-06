@@ -20,13 +20,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ws6v7y8aj9vwv1!h@9y&vxt6bb60lzf=tnv98&!2+5fu4@)&p%'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", 'insecure-key')
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
 
 # Application definition
 
@@ -83,6 +79,14 @@ DATABASES = {
     }
 }
 
+if os.getenv("DATABASE_URL"):
+    import dj_database_url
+
+    db_from_env = dj_database_url.config(
+        conn_max_age=500, ssl_require=os.getenv("DATABASE_SSL", False),
+    )
+    DATABASES["default"].update(db_from_env)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -120,16 +124,43 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = os.getenv("STATIC_URL", "/static/")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# Logging
+
+APP_LOGGING_LEVEL = os.getenv("APP_LOGGING_LEVEL", "INFO")
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {"basic": {"format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",},},
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+        "console": {"level": APP_LOGGING_LEVEL, "class": "logging.StreamHandler", "formatter": "basic",},
+    },
+    "loggers": {
+        "django.request": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "django.security": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "core": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+        "pointy": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+        "daphne": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+    },
+    "root": {"handlers": ["console",], "level": "INFO",},
+}
 
 # Channels
 ASGI_APPLICATION = 'pointy.routing.application'
 
-REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
+CHANNELS_HOST = os.getenv('CHANNELS_HOST', "redis://127.0.0.1:6379/0")
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [(REDIS_HOST, 6379)]}
+        "CONFIG": {"hosts": [CHANNELS_HOST]}
     }
 }

@@ -1,0 +1,53 @@
+version: '3'
+
+volumes:
+  prod_pointy_data: {}
+  prod_pointy_data_backups: {}
+  prod_redis_data: {}
+
+services:
+  redis:
+    image: redis:5-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - prod_redis_data:/data
+    ports:
+      - "6379:6379"
+  db:
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: pointy
+    image: postgres:12-alpine
+    expose:
+      - "5432"
+    volumes:
+      - prod_pointy_data:/var/lib/postgresql/data
+      - prod_pointy_data_backups:/backups
+  api:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    links:
+      - db:db
+    environment:
+      DJANGO_SETTINGS_MODULE: pointy.settings_deploy
+      DATABASE_URL: postgres://postgres@db:5432/pointy
+      CHANNELS_HOST: "redis://redis:6379/0"
+      DJANGO_SECRET_KEY: insecure-dev-key
+      DOMAIN: localhost
+      DJANGO_MANAGEPY_MIGRATE: "on"
+      ENVIRONMENT: local
+      SESSION_COOKIE_SECURE: "False"
+      EMAIL_HOST: mailhog
+      EMAIL_PORT: 1025
+      APP_LOGGING_LEVEL: "DEBUG"
+    ports:
+      - "8000:8000"
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
