@@ -15,27 +15,40 @@ from .models import VALUES_TEMPLATES, PointyRoom, RoomUser, RoomTicket
 logger = logging.getLogger(__name__)
 
 
-class PointyHome(JsonWebsocketConsumer):
+class LoggingJsonWebsocketConsumer(JsonWebsocketConsumer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        name = f"{__name__}.{self.__class__.__name__}"
+        self.logger = logging.getLogger(name)
+
+
+class PointyHome(LoggingJsonWebsocketConsumer):
+
     def connect(self):
-        logger.info("Socket connected")
+        self.logger.info("Socket connected")
+        self.logger.debug(f"group_add({HOME_GROUP_NAME}, {self.channel_name})")
         async_to_sync(self.channel_layer.group_add)(
             HOME_GROUP_NAME,
             self.channel_name
         )
         self.accept()
-        logger.info("Socket accepted")
+        self.logger.info("Socket accepted")
 
     def disconnect(self, code):
-        logger.info("Socket disconnected")
+        self.logger.info("Socket disconnected")
+        self.logger.debug(f"group_discard({HOME_GROUP_NAME}, {self.channel_name})")
         async_to_sync(self.channel_layer.group_discard)(
             HOME_GROUP_NAME,
             self.channel_name
         )
 
     def pointy_state(self, event):
+        self.logger.debug(f"send: {event}")
         self.send(text_data=json.dumps(event))
 
     def receive_json(self, content, **kwargs):
+        self.logger.debug(f"receive_json: {content}")
         if content["type"] == "request_pointy_state":
             self.send(json.dumps(build_pointy_state()))
         elif content["type"] == "room_created":
@@ -45,10 +58,11 @@ class PointyHome(JsonWebsocketConsumer):
                 build_pointy_state()
             )
 
-class PointySession(JsonWebsocketConsumer):
+class PointySession(LoggingJsonWebsocketConsumer):
     def connect(self):
         self.session_id = self.scope["url_route"]["kwargs"]["session_id"]
         self.group_name = f"pointy_{self.session_id}"
+        self.logger.debug(f"group_add({self.group_name}, {self.channel_name})")
         async_to_sync(self.channel_layer.group_add)(
             self.group_name,
             self.channel_name
@@ -56,15 +70,18 @@ class PointySession(JsonWebsocketConsumer):
         self.accept()
 
     def disconnect(self, code):
+        self.logger.debug(f"group_discard({self.group_name}, {self.channel_name})")
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
             self.channel_name
         )
 
     def room_update(self, event):
+        self.logger.debug(f"room_update: {event}")
         self.send(text_data=json.dumps(event))
 
     def receive_json(self, content, **kwargs):
+        self.logger.debug(f"receive_json: {content}")
         room = PointyRoom.objects.filter(session_id=self.session_id).first()
         if not room:
             return
@@ -155,6 +172,7 @@ def build_pointy_state():
 
 
 def create_room(message):
+    logger.debug(f"create_room: {message}")
     room, _created = PointyRoom.objects.get_or_create(
         session_id=message["session_id"], defaults={
             "name": message["room_name"],
@@ -164,4 +182,5 @@ def create_room(message):
             "last_access_dt": timezone.now(),
         })
     PointyRoom.objects.filter(pk=room.pk).update(last_access_dt=timezone.now())
+    logger.debug(f"created: {_created}")
     return room
