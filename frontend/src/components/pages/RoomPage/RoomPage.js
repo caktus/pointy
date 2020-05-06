@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext } from "react";
 import { RoomPageStyled, SpinnerWrapper } from "./RoomPage.styled";
 
 // Route
-import { useParams, useLocation, Redirect } from 'react-router';
+import { useParams, useLocation, useHistory, Redirect } from 'react-router';
 
 // Hooks
 import { useSessionSocket } from "../../../hooks/useSocket";
@@ -18,10 +18,15 @@ export const RoomContext = createContext();
 
 const RoomPage = props => {
   let { sessionId } = useParams()
+  const history = useHistory();
   const { state: routerState } = useLocation(); 
   const [user, setUser] = useState();
   const [room, setRoom] = useState();
   const { sessionSocket, publish, subscribe } = useSessionSocket();
+
+  useEffect(() => {
+    if (!sessionSocket) history.replace('/')
+  })
 
   useEffect(() => {
     const user = getUserFromLS();
@@ -41,7 +46,7 @@ const RoomPage = props => {
       session_id: sessionId,
       user: thisUser
     });
-  }, [user]);
+  }, []);
 
   const roomContext = {
     room,
