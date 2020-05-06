@@ -127,6 +127,32 @@ USE_TZ = True
 STATIC_URL = os.getenv("STATIC_URL", "/static/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Logging
+
+APP_LOGGING_LEVEL = os.getenv("APP_LOGGING_LEVEL", "INFO")
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {"basic": {"format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",},},
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+        "console": {"level": APP_LOGGING_LEVEL, "class": "logging.StreamHandler", "formatter": "basic",},
+    },
+    "loggers": {
+        "django.request": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "django.security": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "core": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+        "pointy": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+        "daphne": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
+    },
+    "root": {"handlers": ["console",], "level": "INFO",},
+}
+
 # Channels
 ASGI_APPLICATION = 'pointy.routing.application'
 
