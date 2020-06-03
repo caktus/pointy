@@ -24,6 +24,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", 'insecure-key')
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
 
+ALLOWED_HOSTS=('127.0.0.1',)
+
 # Application definition
 
 INSTALLED_APPS = [
