@@ -78,8 +78,10 @@ class PointySession(JsonWebsocketConsumer):
         if event_type == "user_disconnect":
             user = message.get('user')
             if (user):
-                RoomUser.objects.filter(room=room, username=user).first().delete()
-                publish_room = True
+                room_user = RoomUser.objects.filter(room=room, username=user).first()
+                if room_user:
+                    room_user.delete()
+                    publish_room = True
 
         if event_type == "join_room":
             user = message.get("user")
