@@ -11,7 +11,9 @@ export const HomeSocketProvider = ({ path, children }) => {
     if (!socket || socket?.getState() !== WebSocket.OPEN) {
       const url = BASE_SOCKET_URL + path;
       const newSocketConnector = WebSocketConnection
+      console.log('OPENING NEW Pointy CONNECTION')
       newSocketConnector.connect(url, () => {
+        console.log('NEW Pointy CONNECTION opened')
         setSocket(newSocketConnector)
       });
     }
@@ -23,7 +25,7 @@ export const HomeSocketProvider = ({ path, children }) => {
         socket.close()
       }
     }
-  }, [path, socket])
+  }, [])
 
   return (
     <HomeSocketContext.Provider value={socket}>

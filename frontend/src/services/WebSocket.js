@@ -56,17 +56,19 @@ class WebSocketService {
     };
 
     this.socket.onerror = (e) => {
-      console.warn('SOCKET ERROR');
-      console.warn(e.message);
+      console.log('SOCKET ERROR');
+      console.log(e.message);
     };
 
     this.socket.onclose = () => {
+      console.log('SOCKET CLOSES')
       if (this.reconnectAttempts < config.MAX_RECONNECT_ATTEMPTS) {
         let _timeout = setTimeout(() => {
+          console.log("ATTEMPTING RECONNECT, ", this.reconnectAttempts);
           this.connect(this.url, onOpenCallback);
         }, config.RECONNECT_ATTEMPT_INVERVAL);
       } else {
-        console.warn(
+        console.log(
           "Reached maxium reconnect attempts: ",
           config.MAX_RECONNECT_ATTEMPTS
         );
@@ -82,7 +84,7 @@ class WebSocketService {
   }
 
   _fallbackCallback(eventName) {
-    console.warn(`Received "${eventName}" event, but no callback was registered for this event`)
+    console.log(`Received "${eventName}" event, but no callback was registered for this event`)
   }
 
   close() {
@@ -108,7 +110,7 @@ class WebSocketService {
     const { type, message } = JSON.parse(data);
     console.log('[receive]', type, ': ', message)
     if (!this.callbacks[EVENT_TYPES[type]]) {
-      console.warn(`WebSocket instance recieved unhandled event type "${type}"`);
+      console.log(`WebSocket instance recieved unhandled event type "${type}"`);
     } else {
        this.callbacks[EVENT_TYPES[type]](message);
     }
@@ -117,22 +119,7 @@ class WebSocketService {
   getState() {
     return this.socket.readyState;
   }
-
-  // waitForSocketConnection(callback) {
-  //   const socket = this.socket;
-  //   const recursion = this.waitForSocketConnection;
-  //   this.reconnectAttempts++;
-  //   setTimeout(function () {
-  //     if (socket.readyState === WebSocket.OPEN) {
-  //       callback()
-  //       return
-  //     } else if (this.reconnectAttempts < 1000) {
-  //         recursion(callback);
-  //       }
-  //   }, 100);
-  // }
 }
-
 
 const WebSocketConnection = WebSocketService.getInstance();
 
