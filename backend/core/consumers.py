@@ -1,5 +1,6 @@
 import json
 import logging
+from pprint import pformat
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
@@ -17,25 +18,29 @@ logger = logging.getLogger(__name__)
 
 class PointyHome(JsonWebsocketConsumer):
     def connect(self):
-        logger.info("Socket connected")
+        logger.info("Socket connected to PointyHome")
         async_to_sync(self.channel_layer.group_add)(
             HOME_GROUP_NAME,
             self.channel_name
         )
         self.accept()
-        logger.info("Socket accepted")
+        logger.info("Socket accepted to PointyHome")
 
     def disconnect(self, code):
-        logger.info("Socket disconnected")
+        logger.info("Socket disconnected from PointyHome")
         async_to_sync(self.channel_layer.group_discard)(
             HOME_GROUP_NAME,
             self.channel_name
         )
 
     def pointy_state(self, event):
+        logger.debug("PointyHome SENDING event")
+        logging.debug(pformat(event))
         self.send(text_data=json.dumps(event))
 
     def receive_json(self, content, **kwargs):
+        logger.debug("PointyHome RECEIVING event")
+        logging.debug(pformat(content))
         if content["type"] == "request_pointy_state":
             self.send(json.dumps(build_pointy_state()))
         elif content["type"] == "room_created":
@@ -47,6 +52,7 @@ class PointyHome(JsonWebsocketConsumer):
 
 class PointySession(JsonWebsocketConsumer):
     def connect(self):
+        logger.info("Socket connected to PointySession")
         self.session_id = self.scope["url_route"]["kwargs"]["session_id"]
         self.group_name = f"pointy_{self.session_id}"
         async_to_sync(self.channel_layer.group_add)(
@@ -54,17 +60,23 @@ class PointySession(JsonWebsocketConsumer):
             self.channel_name
         )
         self.accept()
+        logger.info("Socket accepted to PointySession")
 
     def disconnect(self, code):
+        logger.info("Socket disconnected from PointySession")
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
             self.channel_name
         )
 
     def room_update(self, event):
+        logger.debug("PointySession SENDING event")
+        logging.debug(pformat(event))
         self.send(text_data=json.dumps(event))
 
     def receive_json(self, content, **kwargs):
+        logger.debug("PointySession RECEIVING event")
+        logging.debug(pformat(content))
         room = PointyRoom.objects.filter(session_id=self.session_id).first()
         if not room:
             return
