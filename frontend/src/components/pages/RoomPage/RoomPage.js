@@ -34,7 +34,9 @@ const RoomPage = props => {
   }, []);
 
   useEffect(() => {
+    console.log(`[FRONT END] -- subscribed to "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}`)
     subscribe(EVENT_TYPES.room_update, message => {
+      console.log(`[FRONT END] -- RECEIVED EVENT "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}: `, message)
       setRoom(message);
     });
   }, []);
@@ -42,6 +44,7 @@ const RoomPage = props => {
   useEffect(() => {
     const thisUser = routerState ? routerState.username : user
     sessionSocket.setUser(thisUser)
+    console.log(`[FRONT END] -- publishing "${EVENT_TYPES.join_room}": ${sessionId}, as ${thisUser}`)
     publish(EVENT_TYPES.join_room, {
       session_id: sessionId,
       user: thisUser
