@@ -35,7 +35,10 @@ const StartPage = () => {
    *  including new rooms added and current ValueTemplates
    **/ 
   useEffect(() => {
+    console.log(`SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
     subscribe(EVENT_TYPES.pointy_state, data => {
+
+      console.log(`RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
       setRooms(data.rooms);
       setValueTemplates(data.values_templates);
     });
@@ -46,6 +49,7 @@ const StartPage = () => {
    *  Effectively, "Somebody just joined and needs initial point_state"
    **/ 
   useEffect(() => {
+    console.log(`PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
     publish(EVENT_TYPES.request_pointy_state, {});
   }, []);
 

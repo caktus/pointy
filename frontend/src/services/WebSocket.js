@@ -88,6 +88,7 @@ class WebSocketService {
   }
 
   subscribe(eventName, callback) {
+    console.log('[subscribe]', eventName)
     const fallback = () => this._fallbackCallback(eventName)
     this.callbacks = {
       ...this.callbacks,
@@ -96,12 +97,14 @@ class WebSocketService {
   }
 
   publish(eventName, data) {
+    console.log('[publish]', eventName)
     const msg = { type: eventName, message: data };
     this.socket.send(JSON.stringify(msg));
   }
 
   _handleNewMessage(data) {
     const { type, message } = JSON.parse(data);
+    console.log('[receive]', type, ': ', message)
     if (!this.callbacks[EVENT_TYPES[type]]) {
       console.warn(`WebSocket instance recieved unhandled event type "${type}"`);
     } else {
