@@ -36,10 +36,9 @@ const StartPage = () => {
    **/ 
   useEffect(() => {
     if (connected) {
-      console.log(`SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
+      console.log(`${Date()} SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
       subscribe(EVENT_TYPES.pointy_state, data => {
-
-        console.log(`RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
+        console.log(`${Date()} RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
         setRooms(data.rooms);
         setValueTemplates(data.values_templates);
       });
@@ -52,7 +51,7 @@ const StartPage = () => {
    **/ 
   useEffect(() => {
     if (connected) {
-      console.log(`PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
+      console.log(`${Date()} PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
       publish(EVENT_TYPES.request_pointy_state, {});
     }
   }, [connected]);
