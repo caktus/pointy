@@ -8,7 +8,7 @@ export const HomeSocketProvider = ({ path, children }) => {
   const [socket, setSocket] = useState();
 
   useEffect(() => {
-    if (!socket) {
+    if (!socket || socket?.getState() !== WebSocket.OPEN) {
       const url = BASE_SOCKET_URL + path;
       const newSocketConnector = WebSocketConnection
       newSocketConnector.connect(url, () => {

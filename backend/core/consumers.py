@@ -35,12 +35,12 @@ class PointyHome(JsonWebsocketConsumer):
 
     def pointy_state(self, event):
         logger.debug("PointyHome SENDING event")
-        logging.debug(pformat(event))
+        logger.debug(pformat(event))
         self.send(text_data=json.dumps(event))
 
     def receive_json(self, content, **kwargs):
         logger.debug("PointyHome RECEIVING event")
-        logging.debug(pformat(content))
+        logger.debug(pformat(content))
         if content["type"] == "request_pointy_state":
             self.send(json.dumps(build_pointy_state()))
         elif content["type"] == "room_created":
@@ -71,12 +71,12 @@ class PointySession(JsonWebsocketConsumer):
 
     def room_update(self, event):
         logger.debug("PointySession SENDING event")
-        logging.debug(pformat(event))
+        logger.debug(pformat(event))
         self.send(text_data=json.dumps(event))
 
     def receive_json(self, content, **kwargs):
         logger.debug("PointySession RECEIVING event")
-        logging.debug(pformat(content))
+        logger.debug(pformat(content))
         room = PointyRoom.objects.filter(session_id=self.session_id).first()
         if not room:
             return
