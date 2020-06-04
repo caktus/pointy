@@ -1,6 +1,9 @@
 import React, { useState, useEffect, createContext } from "react";
 import { RoomPageStyled, SpinnerWrapper } from "./RoomPage.styled";
 
+// Logging
+import logger from '../../../services/Logger';
+
 // Route
 import { useParams, useLocation, useHistory, Redirect } from 'react-router';
 
@@ -35,9 +38,9 @@ const RoomPage = props => {
 
   useEffect(() => {
     if (connected) {
-      console.log(`${Date()} SUBSCRIBED TO EVENT "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}`)
+      logger(`SUBSCRIBED TO EVENT "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}`)
       subscribe(EVENT_TYPES.room_update, message => {
-        console.log(`${Date()} RECEIVED EVENT "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}: `, message)
+        logger(`RECEIVED EVENT "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}: `, message)
         setRoom(message);
       });
     }
@@ -47,7 +50,7 @@ const RoomPage = props => {
     if (connected) {
       const thisUser = routerState ? routerState.username : user
       sessionSocket.setUser(thisUser)
-      console.log(`${Date()} PUBLISHING EVENT "${EVENT_TYPES.join_room}": ${sessionId}, as ${thisUser}`)
+      logger(`PUBLISHING EVENT "${EVENT_TYPES.join_room}": ${sessionId}, as ${thisUser}`)
       publish(EVENT_TYPES.join_room, {
         session_id: sessionId,
         user: thisUser

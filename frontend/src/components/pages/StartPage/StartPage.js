@@ -14,6 +14,8 @@ import { useHistory } from 'react-router-dom';
 
 import { SPRING } from '../../../styles/animations';
 
+// Logger
+import logger from '../../../services/Logger';
 
 // Hooks
 import { useHomeSocket } from '../../../hooks/useSocket';
@@ -36,9 +38,9 @@ const StartPage = () => {
    **/ 
   useEffect(() => {
     if (connected) {
-      console.log(`${Date()} SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
+      logger(`SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
       subscribe(EVENT_TYPES.pointy_state, data => {
-        console.log(`${Date()} RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
+        logger(`RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
         setRooms(data.rooms);
         setValueTemplates(data.values_templates);
       });
@@ -51,7 +53,7 @@ const StartPage = () => {
    **/ 
   useEffect(() => {
     if (connected) {
-      console.log(`${Date()} PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
+      logger(`PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
       publish(EVENT_TYPES.request_pointy_state, {});
     }
   }, [connected]);
