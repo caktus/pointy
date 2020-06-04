@@ -11,8 +11,9 @@ export const SessionSocketProvider = ({ path, children }) => {
     if (!socket) {
       const url = BASE_SOCKET_URL + path;
       const newSocketConnector = WebSocketConnection
-      newSocketConnector.connect(url);
-      setSocket(newSocketConnector)
+      newSocketConnector.connect(url, () => {
+        setSocket(newSocketConnector)
+      });
     }
     return () => {
       const readyState = socket?.getState()
@@ -22,7 +23,7 @@ export const SessionSocketProvider = ({ path, children }) => {
         socket.close()
       }
     }
-  }, [])
+  }, [path, socket])
 
   return (
     <SessionSocketContext.Provider value={socket}>

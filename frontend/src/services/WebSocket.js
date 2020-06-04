@@ -36,15 +36,17 @@ class WebSocketService {
     this.publish = this.publish.bind(this);
     this._handleNewMessage = this._handleNewMessage.bind(this);
     this.getState = this.getState.bind(this);
-    this.waitForSocketConnection = this.waitForSocketConnection.bind(this);
+    // this.waitForSocketConnection = this.waitForSocketConnection.bind(this);
   }
 
-  connect(url) {
+  connect(url, onOpenCallback) {
+    console.log(`CONNECTING TO "${url}", has callback? ${!!onOpenCallback}`)
     this.reconnectAttempts = this.reconnectAttempts + 1;
     this.url = url;
     this.socket = new WebSocket(this.url);
 
     this.socket.onopen = () => {
+      onOpenCallback()
       this.reconnectAttempts = 0;
       return true;
     };
@@ -60,8 +62,8 @@ class WebSocketService {
 
     this.socket.onclose = () => {
       if (this.reconnectAttempts < config.MAX_RECONNECT_ATTEMPTS) {
-        let timeout = setTimeout(() => {
-          this.connect(this.url);
+        let _timeout = setTimeout(() => {
+          this.connect(this.url, onOpenCallback);
         }, config.RECONNECT_ATTEMPT_INVERVAL);
       } else {
         console.warn(
@@ -116,19 +118,19 @@ class WebSocketService {
     return this.socket.readyState;
   }
 
-  waitForSocketConnection(callback) {
-    const socket = this.socket;
-    const recursion = this.waitForSocketConnection;
-    this.reconnectAttempts++;
-    setTimeout(function () {
-      if (socket.readyState === WebSocket.OPEN) {
-        callback()
-        return
-      } else if (this.reconnectAttempts < 1000) {
-          recursion(callback);
-        }
-    }, 100);
-  }
+  // waitForSocketConnection(callback) {
+  //   const socket = this.socket;
+  //   const recursion = this.waitForSocketConnection;
+  //   this.reconnectAttempts++;
+  //   setTimeout(function () {
+  //     if (socket.readyState === WebSocket.OPEN) {
+  //       callback()
+  //       return
+  //     } else if (this.reconnectAttempts < 1000) {
+  //         recursion(callback);
+  //       }
+  //   }, 100);
+  // }
 }
 
 

@@ -24,7 +24,7 @@ import { setUserToLS, getUserFromLS } from '../../../util/localStorageUser';
 
 const StartPage = () => {
   const history = useHistory();
-  const { publish, subscribe } = useHomeSocket();
+  const { publish, subscribe, connected } = useHomeSocket();
   const [username, setUsername] = useState(getUserFromLS() || '');
   const [rooms, setRooms] = useState([]);
   const [valueTemplates, setValueTemplates] = useState([]);
@@ -35,23 +35,27 @@ const StartPage = () => {
    *  including new rooms added and current ValueTemplates
    **/ 
   useEffect(() => {
-    console.log(`SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
-    subscribe(EVENT_TYPES.pointy_state, data => {
+    if (connected) {
+      console.log(`SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
+      subscribe(EVENT_TYPES.pointy_state, data => {
 
-      console.log(`RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
-      setRooms(data.rooms);
-      setValueTemplates(data.values_templates);
-    });
-  }, []);
+        console.log(`RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
+        setRooms(data.rooms);
+        setValueTemplates(data.values_templates);
+      });
+    }
+  }, [connected]);
 
   /**
    *  Publish "request_pointy_state" 
    *  Effectively, "Somebody just joined and needs initial point_state"
    **/ 
   useEffect(() => {
-    console.log(`PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
-    publish(EVENT_TYPES.request_pointy_state, {});
-  }, []);
+    if (connected) {
+      console.log(`PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
+      publish(EVENT_TYPES.request_pointy_state, {});
+    }
+  }, [connected]);
 
 
 
