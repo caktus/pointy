@@ -4,7 +4,6 @@ import { smallerThanTabletLandscape } from './styles/media';
 export const AppStyled = styled.div`
     min-height: 100vh;
     max-width: 100vw;
-    /* overflow: hidden; */
     display: flex;
     flex-direction: column;
 `;
