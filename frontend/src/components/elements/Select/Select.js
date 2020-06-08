@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   SelectWrapper,
+  SelectLabel,
   SelectStyled,
   OptionStyled,
   ErrorsStyled,
@@ -10,9 +11,10 @@ import {
 import { AnimatePresence } from 'framer-motion';
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
-const Select = ({ options, value, onChange, error }) => {
+const Select = ({ options, label, value, onChange, error }) => {
   return (
     <SelectWrapper>
+      {label && <SelectLabel>{label}</SelectLabel>}
       <SelectStyled value={value} onChange={onChange}>
         <OptionStyled value=""></OptionStyled>
         {options.map((option) => (

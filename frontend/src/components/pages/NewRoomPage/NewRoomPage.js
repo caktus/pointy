@@ -3,6 +3,7 @@ import {
   NewRoomPageStyled,
   NewRoomHeading,
   NewRoomForm,
+  InputWrapper,
   InputStyled,
   ButtonStyled
 } from "./NewRoomPage.styled";
@@ -47,7 +48,9 @@ const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
     setTemplate(e.target.value)
   }
 
-  const handleCreateSession = () => {
+  const handleCreateSession = e => {
+    console.log('wtf?')
+    e.preventDefault()
     if (name && template) createSession();
     if (!name) {
       setErrors({
@@ -88,17 +91,25 @@ const NewRoomPage = ({ rooms, username, valueTemplates, publish }) => {
       <NewRoomForm>
         <p>Name your session</p>
         <div>
-          <InputStyled
-            label="session name"
-            value={name}
-            onChange={handleInput}
-            maxLength="50"
-            errors={errors.sessionName}
-            onEnterKey={handleCreateSession}
-          />
-
-          <Select options={valueTemplates} value={template} onChange={handleTemplateSelect} error={errors.template}/>
-
+          <InputWrapper>
+            <InputStyled
+              label="session name"
+              value={name}
+              onChange={handleInput}
+              maxLength="50"
+              errors={errors.sessionName}
+              onEnterKey={handleCreateSession}
+            />
+          </InputWrapper>
+          <InputWrapper>
+            <Select
+              label="Choose a session type"
+              options={valueTemplates}
+              value={template}
+              onChange={handleTemplateSelect}
+              error={errors.template}
+            />
+          </InputWrapper>
           <ButtonStyled onClick={handleCreateSession}>
             Create session
           </ButtonStyled>
