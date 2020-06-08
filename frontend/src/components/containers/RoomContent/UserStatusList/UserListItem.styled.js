@@ -1,12 +1,17 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { colorGrey, colorPrimary, colorGreyLight } from '../../../../styles/colors';
+import { smallerThanTabletLandscape } from '../../../../styles/media';
 
 export const UserListItemStyled = styled(motion.li)`
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-right: 6rem;
+
+    @media (${smallerThanTabletLandscape}) {
+        margin: 2rem 0;
+    }
 `;
 
 
@@ -27,4 +32,5 @@ export const UserName = styled.p`
     color: ${props => props.current ? colorPrimary : colorGrey};
     display: inline-block;
     text-align: right;
+    
 `;

@@ -8,8 +8,12 @@ export const SelectWrapper = styled.div`
     width: 100%;
 `;
 
+export const SelectLabel = styled.label`
+`;
+
 export const SelectStyled = styled.select`
-    padding: 2rem;
+    padding: 1.5rem;
+    margin-top: 2rem;
 `;
 
 export const OptionStyled = styled.option`

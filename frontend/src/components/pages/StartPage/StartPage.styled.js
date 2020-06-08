@@ -24,7 +24,7 @@ export const StartPageUsername = styled.div`
 export const StartPageActionCards = styled.div`
     margin-top: 8rem;
     align-self: center;
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -37,6 +37,7 @@ export const CardStyled = styled(Card)`
     height: 30rem;
     width: 23rem;
     padding: 1rem;
+    margin: 2rem;
     
     cursor: ${props => props.onClick ? 'pointer' : 'default'};
     overflow: hidden;

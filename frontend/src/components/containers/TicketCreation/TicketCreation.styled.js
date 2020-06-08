@@ -7,13 +7,15 @@ import { Button } from 'reaktus';
 export const TicketCreationStyled = styled(motion.div)`
     display: flex;
     flex-direction: column;
-    margin-top: 5rem;
+    margin: 5rem auto 0;
+    width: 100%;
+    max-width: 500px;
 `;
 
 export const InputStyled = styled(Input)`
   & > input {
-    width: 50rem;
-    padding: 1rem;
+    width: 100%;
+    padding: 2.5rem;
   }
 
   & > label {

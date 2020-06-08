@@ -1,9 +1,16 @@
 import styled from 'styled-components';
+import { responsiveContentWell } from '../../../styles/variables';
 
 export const RoomContentStyled = styled.div`
     flex: 1;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+`;
+
+export const TicketSpace = styled.div`
+    ${responsiveContentWell};
 `;
 
 export const RoomNameStyled = styled.h2`

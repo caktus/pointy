@@ -9,6 +9,10 @@ export default createGlobalStyle`
         font-size: 10px;
     }
 
+    * {
+        box-sizing: inherit;
+    }
+
     ul, ol {
         margin: 0;
         padding: 0;

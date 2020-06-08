@@ -71,7 +71,7 @@ export const InputStyled = styled.input`
 
   outline: none;
 
-  padding: 0.5rem 1rem;
+  padding: 2rem;
   color: ${colorGrey};
 `;
 

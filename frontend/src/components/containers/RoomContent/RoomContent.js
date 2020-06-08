@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import {
   RoomContentStyled,
   RoomNameStyled,
+  TicketSpace,
   RoomContentWrapper,
   RoomContentTop,
 } from "./RoomContent.styled";
@@ -29,9 +30,9 @@ const RoomContent = props => {
       <RoomContentWrapper>
         <RoomContentTop>
           <UserStatusList />
-          <AnimatePresence>
-            {phaseRouter(room.phase)}
-          </AnimatePresence>
+          <TicketSpace>
+            <AnimatePresence>{phaseRouter(room.phase)}</AnimatePresence>
+          </TicketSpace>
         </RoomContentTop>
         <PreviousTickets />
       </RoomContentWrapper>
