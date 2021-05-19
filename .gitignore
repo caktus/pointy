@@ -13,3 +13,5 @@ deploy/roles/*
 .vault_pass
 *.retry
 deploy.log
+.direnv
+.envrc

@@ -22,6 +22,8 @@ k8s_namespace: "{{ app_name }}-{{ env_name }}"
 
 ##########################
 
+k8s_migrations_enabled: false
+k8s_collectstatic_enabled: false
 k8s_container_image_pull_policy: Always
 k8s_auth_api_key: !vault |
           $ANSIBLE_VAULT;1.1;AES256
