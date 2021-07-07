@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React from "react";
 import GlobalStyle from './styles/GlobalStyle';
 import { AppStyled, AppWrapperStyled } from "./App.styled";
 
@@ -14,7 +14,6 @@ import AsyncStartPage from "./components/pages/StartPage/AsyncStartPage";
 import AsyncRoomPage from './components/pages/RoomPage/AsyncRoomPage';
 
 function App() {
-  const [user, setUser] = useState();
   // 🥞
   return (
     <>

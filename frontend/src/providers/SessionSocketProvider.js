@@ -1,21 +1,32 @@
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
 import SessionSocketContext from "../context/SessionSocketContext";
 import WebSocketConnection from "../services/WebSocket";
 import { BASE_SOCKET_URL } from "../services/config";
 
 
 export const SessionSocketProvider = ({ path, children }) => {
-  const socketRef = useRef();
+  const [socket, setSocket] = useState();
 
-  if (!socketRef.current) {
-    const url = BASE_SOCKET_URL + path;
-    socketRef.current = WebSocketConnection;
-    socketRef.current.connect(url);
-  }
+  useEffect(() => {
+    if (!socket) {
+      const url = BASE_SOCKET_URL + path;
+      const newSocketConnector = WebSocketConnection
+      newSocketConnector.connect(url);
+      setSocket(newSocketConnector)
+    }
+    return () => {
+      const readyState = socket?.getState()
+      if (readyState
+        && (readyState === WebSocket.CONNECTING || readyState === WebSocket.OPEN)
+      ) {
+        socket.close()
+      }
+    }
+  }, [])
 
   return (
-    <SessionSocketContext.Provider value={socketRef.current}>
-      {socketRef.current ? children : null}
+    <SessionSocketContext.Provider value={socket}>
+      {socket ? children : <h2>Waiting for connection...</h2>}
     </SessionSocketContext.Provider>
   );
 };

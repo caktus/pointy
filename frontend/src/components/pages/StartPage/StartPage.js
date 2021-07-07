@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StartPageStyled,
   StartPageUsername,
@@ -25,7 +25,7 @@ import { setUserToLS, getUserFromLS } from '../../../util/localStorageUser';
 const StartPage = () => {
   const history = useHistory();
   const { publish, subscribe } = useHomeSocket();
-  const [username, setUsername] = useState(getUserFromLS());
+  const [username, setUsername] = useState(getUserFromLS() || '');
   const [rooms, setRooms] = useState([]);
   const [valueTemplates, setValueTemplates] = useState([]);
   const [errors, setErrors] = useState({});
