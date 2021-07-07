@@ -18,6 +18,10 @@ class PointyRoom(models.Model):
     def __str__(self):
         return f"{self.name} ({self.session_id})"
 
+    @property
+    def current_ticket(self):
+        return self.tickets.order_by("-last_update_dt").first()
+
     def update_message(self):
         ticket_qs = self.tickets.order_by("-last_update_dt")
         ticket = ticket_qs.first()
