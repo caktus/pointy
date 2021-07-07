@@ -1,7 +1,7 @@
 export function getUserFromLS() {
-    return localStorage.getItem('user');
+    return localStorage.getItem('pointyUser');
 }
 
 export function setUserToLS(user) {
-    localStorage.setItem('user', user);
+    localStorage.setItem('pointyUser', user);
 }
