@@ -3,7 +3,6 @@ from colorama import init
 
 import kubesae
 
-
 init(autoreset=True)
 
 
@@ -45,9 +44,11 @@ def build_deploy(c, push=True, deploy=True):
     # Build
     kubesae.image['tag'](c)
     api(c)
-    kubesae.image['build'](c)
+    with c.cd("backend/"):
+        kubesae.image['build'](c)
     web(c)
-    kubesae.image['build'](c)
+    with c.cd("frontend/"):
+        kubesae.image['build'](c)
     # Push
     if push:
         # Docker authenciation
@@ -75,4 +76,13 @@ ns.add_task(api)
 ns.add_task(web)
 ns.add_task(build_deploy)
 ns.add_task(local)
-ns.configure({"run": {"echo": True}})
+ns.configure(
+    {
+        "aws": {
+            "profile_name": "saguaro-cluster",
+            "region": "us-east-1",
+        },
+        "cluster": "caktus-saguaro-cluster",
+        "run": {"echo": True}
+    }
+)
