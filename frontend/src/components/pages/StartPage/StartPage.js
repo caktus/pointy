@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StartPageStyled,
   StartPageUsername,
@@ -14,6 +14,8 @@ import { useHistory } from 'react-router-dom';
 
 import { SPRING } from '../../../styles/animations';
 
+// Logger
+import logger from '../../../services/Logger';
 
 // Hooks
 import { useHomeSocket } from '../../../hooks/useSocket';
@@ -24,8 +26,8 @@ import { setUserToLS, getUserFromLS } from '../../../util/localStorageUser';
 
 const StartPage = () => {
   const history = useHistory();
-  const { publish, subscribe } = useHomeSocket();
-  const [username, setUsername] = useState(getUserFromLS());
+  const { publish, subscribe, connected } = useHomeSocket();
+  const [username, setUsername] = useState(getUserFromLS() || '');
   const [rooms, setRooms] = useState([]);
   const [valueTemplates, setValueTemplates] = useState([]);
   const [errors, setErrors] = useState({});
@@ -35,19 +37,26 @@ const StartPage = () => {
    *  including new rooms added and current ValueTemplates
    **/ 
   useEffect(() => {
-    subscribe(EVENT_TYPES.pointy_state, data => {
-      setRooms(data.rooms);
-      setValueTemplates(data.values_templates);
-    });
-  }, []);
+    if (connected) {
+      logger(`SUBSCRIBED TO EVENT "${EVENT_TYPES.pointy_state}"`)
+      subscribe(EVENT_TYPES.pointy_state, data => {
+        logger(`RECEIVED EVENT "${EVENT_TYPES.pointy_state}: "`, data)
+        setRooms(data.rooms);
+        setValueTemplates(data.values_templates);
+      });
+    }
+  }, [connected]);
 
   /**
    *  Publish "request_pointy_state" 
    *  Effectively, "Somebody just joined and needs initial point_state"
    **/ 
   useEffect(() => {
-    publish(EVENT_TYPES.request_pointy_state, {});
-  }, []);
+    if (connected) {
+      logger(`PUBLISHING EVENT "${EVENT_TYPES.request_pointy_state}"`)
+      publish(EVENT_TYPES.request_pointy_state, {});
+    }
+  }, [connected]);
 
 
 

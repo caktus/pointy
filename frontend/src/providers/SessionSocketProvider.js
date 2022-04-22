@@ -1,21 +1,33 @@
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
 import SessionSocketContext from "../context/SessionSocketContext";
-import WebSocketConnection from "../services/WebSocket";
+import { SocketManager } from "../services/WebSocket";
 import { BASE_SOCKET_URL } from "../services/config";
 
+// logger
+import logger from '../services/Logger'
 
 export const SessionSocketProvider = ({ path, children }) => {
-  const socketRef = useRef();
+  const [openSocket, setOpenSocket] = useState();
 
-  if (!socketRef.current) {
-    const url = BASE_SOCKET_URL + path;
-    socketRef.current = WebSocketConnection;
-    socketRef.current.connect(url);
-  }
+  useEffect(() => {
+    const url = BASE_SOCKET_URL + path
+    logger('OPENING NEW Pointy CONNECTION')
+    const socket = new WebSocket(url)
+    new SocketManager(socket, setOpenSocket)
+
+    return () => {
+      const readyState = openSocket?.getState();
+      if (readyState
+        && (readyState === WebSocket.CONNECTING || readyState === WebSocket.OPEN)
+      ) {
+        openSocket.close()
+      }
+    }
+  }, []);
 
   return (
-    <SessionSocketContext.Provider value={socketRef.current}>
-      {socketRef.current ? children : null}
+    <SessionSocketContext.Provider value={openSocket}>
+      {openSocket ? children : <h2>Waiting for connection...</h2>}
     </SessionSocketContext.Provider>
   );
 };

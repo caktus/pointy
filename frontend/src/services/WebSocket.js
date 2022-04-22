@@ -1,5 +1,7 @@
 import * as config from './config';
 
+import logger from './Logger';
+
 export const EVENT_TYPES = {
   'request_pointy_state': 'request_pointy_state',
   'pointy_state': 'pointy_state',
@@ -12,39 +14,14 @@ export const EVENT_TYPES = {
   'vote': 'vote',
 }
 
-class WebSocketService {
-  static instance = null;
-  callbacks = {};
-  reconnectAttempts = 0;
-
-  static getInstance() {
-    if (!WebSocketService.instance) {
-      WebSocketService.instance = new WebSocketService();
-    }
-    return WebSocketService.instance;
-  }
-
-  constructor() {
-    this.url = "";
-    this.socket = null;
-    this.user = null;
-
-    this.connect = this.connect.bind(this);
-    this._fallbackCallback = this._fallbackCallback.bind(this);
-    this.close = this.close.bind(this);
-    this.subscribe = this.subscribe.bind(this);
-    this.publish = this.publish.bind(this);
-    this._handleNewMessage = this._handleNewMessage.bind(this);
-    this.getState = this.getState.bind(this);
-    this.waitForSocketConnection = this.waitForSocketConnection.bind(this);
-  }
-
-  connect(url) {
-    this.reconnectAttempts = this.reconnectAttempts + 1;
-    this.url = url;
-    this.socket = new WebSocket(this.url);
+export class SocketManager {
+  constructor(socket, onOpenCallback) {
+    this.socket = socket
+    this.reconnectAttempts = 0;
 
     this.socket.onopen = () => {
+      logger('NEW CONNECTION opened')
+      onOpenCallback(this)
       this.reconnectAttempts = 0;
       return true;
     };
@@ -54,17 +31,19 @@ class WebSocketService {
     };
 
     this.socket.onerror = (e) => {
-      console.warn('SOCKET ERROR');
-      console.warn(e.message);
+      logger('SOCKET ERROR');
+      logger(e.message);
     };
 
     this.socket.onclose = () => {
+      logger('SOCKET CLOSES')
       if (this.reconnectAttempts < config.MAX_RECONNECT_ATTEMPTS) {
-        let timeout = setTimeout(() => {
-          this.connect(this.url);
+        let _timeout = setTimeout(() => {
+          logger("ATTEMPTING RECONNECT, ", this.reconnectAttempts);
+          this.connect(this.url, onOpenCallback);
         }, config.RECONNECT_ATTEMPT_INVERVAL);
       } else {
-        console.warn(
+        logger(
           "Reached maxium reconnect attempts: ",
           config.MAX_RECONNECT_ATTEMPTS
         );
@@ -72,15 +51,16 @@ class WebSocketService {
     };
   }
 
+
   setUser(user) {
     window.onbeforeunload = () => {
-      this.socket.send(JSON.stringify({ type: EVENT_TYPES.user_disconnect, message: { user }}))
+      this.socket.send(JSON.stringify({ type: EVENT_TYPES.user_disconnect, message: { user } }))
     }
     this.user = user
   }
 
   _fallbackCallback(eventName) {
-    console.warn(`Received "${eventName}" event, but no callback was registered for this event`)
+    logger(`Received "${eventName}" event, but no callback was registered for this event`)
   }
 
   close() {
@@ -88,6 +68,7 @@ class WebSocketService {
   }
 
   subscribe(eventName, callback) {
+    logger('[subscribe]', eventName)
     const fallback = () => this._fallbackCallback(eventName)
     this.callbacks = {
       ...this.callbacks,
@@ -96,39 +77,22 @@ class WebSocketService {
   }
 
   publish(eventName, data) {
+    logger('[publish]', eventName)
     const msg = { type: eventName, message: data };
     this.socket.send(JSON.stringify(msg));
   }
 
   _handleNewMessage(data) {
     const { type, message } = JSON.parse(data);
+    logger('[receive]', type, ': ', message)
     if (!this.callbacks[EVENT_TYPES[type]]) {
-      console.warn(`WebSocket instance recieved unhandled event type "${type}"`);
+      logger(`WebSocket instance recieved unhandled event type "${type}"`);
     } else {
-       this.callbacks[EVENT_TYPES[type]](message);
+      this.callbacks[EVENT_TYPES[type]](message);
     }
   }
 
   getState() {
     return this.socket.readyState;
   }
-
-  waitForSocketConnection(callback) {
-    const socket = this.socket;
-    const recursion = this.waitForSocketConnection;
-    this.reconnectAttempts++;
-    setTimeout(function () {
-      if (socket.readyState === WebSocket.OPEN) {
-        callback()
-        return
-      } else if (this.reconnectAttempts < 1000) {
-          recursion(callback);
-        }
-    }, 100);
-  }
 }
-
-
-const WebSocketConnection = WebSocketService.getInstance();
-
-export default WebSocketConnection;

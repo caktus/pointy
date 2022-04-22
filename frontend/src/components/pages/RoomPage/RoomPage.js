@@ -1,6 +1,9 @@
 import React, { useState, useEffect, createContext } from "react";
 import { RoomPageStyled, SpinnerWrapper } from "./RoomPage.styled";
 
+// Logging
+import logger from '../../../services/Logger';
+
 // Route
 import { useParams, useLocation, useHistory, Redirect } from 'react-router';
 
@@ -22,7 +25,7 @@ const RoomPage = props => {
   const { state: routerState } = useLocation(); 
   const [user, setUser] = useState();
   const [room, setRoom] = useState();
-  const { sessionSocket, publish, subscribe } = useSessionSocket();
+  const { sessionSocket, publish, subscribe, connected } = useSessionSocket();
 
   useEffect(() => {
     if (!sessionSocket) history.replace('/')
@@ -34,19 +37,26 @@ const RoomPage = props => {
   }, []);
 
   useEffect(() => {
-    subscribe(EVENT_TYPES.room_update, message => {
-      setRoom(message);
-    });
-  }, []);
+    if (connected) {
+      logger(`SUBSCRIBED TO EVENT "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}`)
+      subscribe(EVENT_TYPES.room_update, message => {
+        logger(`RECEIVED EVENT "${EVENT_TYPES.room_update}": ${sessionId}, as ${user}: `, message)
+        setRoom(message);
+      });
+    }
+  }, [connected]);
 
   useEffect(() => {
-    const thisUser = routerState ? routerState.username : user
-    sessionSocket.setUser(thisUser)
-    publish(EVENT_TYPES.join_room, {
-      session_id: sessionId,
-      user: thisUser
-    });
-  }, []);
+    if (connected) {
+      const thisUser = routerState ? routerState.username : user
+      sessionSocket.setUser(thisUser)
+      logger(`PUBLISHING EVENT "${EVENT_TYPES.join_room}": ${sessionId}, as ${thisUser}`)
+      publish(EVENT_TYPES.join_room, {
+        session_id: sessionId,
+        user: thisUser
+      });
+    }
+  }, [connected]);
 
   const roomContext = {
     room,
