@@ -49,21 +49,21 @@ def build_deploy(c, push=True, deploy=True):
     web(c)
     with c.cd("frontend/"):
         kubesae.image['build'](c)
-    # # Push
-    # if push:
-    #     # Docker authenciation
-    #     kubesae.aws["docker-login"](c)
-    #     api(c)
-    #     kubesae.image['push'](c)
-    #     web(c)
-    #     kubesae.image['push'](c)
-    # # Deploy
-    # if push and deploy:
-    #     kubesae.deploy["install"](c)
-    #     api(c)
-    #     kubesae.deploy["deploy"](c)
-    #     web(c)
-    #     kubesae.deploy["deploy"](c)
+    # Push
+    if push:
+        # Docker authenciation
+        kubesae.aws["docker-login"](c)
+        api(c)
+        kubesae.image['push'](c)
+        web(c)
+        kubesae.image['push'](c)
+    # Deploy
+    if push and deploy:
+        kubesae.deploy["install"](c)
+        api(c)
+        kubesae.deploy["deploy"](c)
+        web(c)
+        kubesae.deploy["deploy"](c)
 
 
 ns = invoke.Collection()
@@ -76,4 +76,13 @@ ns.add_task(api)
 ns.add_task(web)
 ns.add_task(build_deploy)
 ns.add_task(local)
-ns.configure({"run": {"echo": True}})
+ns.configure(
+    {
+        "aws": {
+            "profile_name": "saguaro-cluster",
+            "region": "us-east-1",
+        },
+        "cluster": "caktus-saguaro-cluster",
+        "run": {"echo": True}
+    }
+)
