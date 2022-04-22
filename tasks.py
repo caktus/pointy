@@ -3,7 +3,6 @@ from colorama import init
 
 import kubesae
 
-
 init(autoreset=True)
 
 
@@ -45,24 +44,26 @@ def build_deploy(c, push=True, deploy=True):
     # Build
     kubesae.image['tag'](c)
     api(c)
-    kubesae.image['build'](c)
+    with c.cd("backend/"):
+        kubesae.image['build'](c)
     web(c)
-    kubesae.image['build'](c)
-    # Push
-    if push:
-        # Docker authenciation
-        kubesae.aws["docker-login"](c)
-        api(c)
-        kubesae.image['push'](c)
-        web(c)
-        kubesae.image['push'](c)
-    # Deploy
-    if push and deploy:
-        kubesae.deploy["install"](c)
-        api(c)
-        kubesae.deploy["deploy"](c)
-        web(c)
-        kubesae.deploy["deploy"](c)
+    with c.cd("frontend/"):
+        kubesae.image['build'](c)
+    # # Push
+    # if push:
+    #     # Docker authenciation
+    #     kubesae.aws["docker-login"](c)
+    #     api(c)
+    #     kubesae.image['push'](c)
+    #     web(c)
+    #     kubesae.image['push'](c)
+    # # Deploy
+    # if push and deploy:
+    #     kubesae.deploy["install"](c)
+    #     api(c)
+    #     kubesae.deploy["deploy"](c)
+    #     web(c)
+    #     kubesae.deploy["deploy"](c)
 
 
 ns = invoke.Collection()

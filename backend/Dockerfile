@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.8-slim-bullseye
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
@@ -23,7 +23,7 @@ RUN set -ex \
 # ADD requirements.txt /requirements.txt
 
 # OR, if you're using a directory for your requirements, copy everything (comment out the above and uncomment this if so):
-ADD backend/requirements backend/requirements
+ADD requirements /requirements
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
 # Correct the path to your production requirements file, if needed.
@@ -34,7 +34,7 @@ RUN set -ex \
     libpq-dev \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
-    && pip install --no-cache-dir -r /backend/requirements/base.txt \
+    && pip install --no-cache-dir -r /requirements/base.txt \
     \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/*
@@ -42,7 +42,7 @@ RUN set -ex \
 # Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
 RUN mkdir /code/
 WORKDIR /code/
-ADD ./backend/ /code/
+ADD ./ /code/
 
 # Add any static environment variables needed by Django or your settings file here:
 ENV DJANGO_SETTINGS_MODULE=pointy.settings_deploy
