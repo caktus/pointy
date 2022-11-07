@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { colorGrey, colorGreyLight } from '../../../styles/colors';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { motion } from 'framer-motion';
 
 export const CurrentTickerWrapper = styled.div`
@@ -11,9 +12,22 @@ export const CurrentTickerWrapper = styled.div`
 
 export const TicketName = styled(motion.h2)`
     margin-top: 0;
-    text-align: center;
+    align-self: center;
     font-size: 4rem;
     color: ${colorGrey};
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+`;
+
+export const CancelTicketIcon = styled(FontAwesomeIcon)`
+    font-size: 16px;
+    margin-left: 4rem;
+    cursor: pointer;
+
+    &:hover {
+        color: ${colorGreyLight};
+    }
 `;
 
 export const PhaseName = styled(motion.span)`

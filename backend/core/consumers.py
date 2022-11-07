@@ -111,6 +111,17 @@ class PointySession(JsonWebsocketConsumer):
             room.phase = "voting"
             room_fields.append("phase")
             publish_room = True
+
+        elif event_type == "ticket_cancelled":
+            # zero out any votes
+            for user in room.users.all():
+                user.vote = ""
+                user.save()
+            room.current_ticket.delete()
+            room.phase = "ticket_creation"
+            room_fields.append("phase")
+            publish_room = True
+            
         elif event_type == "vote" and room.phase != "ticket_creation":
             username = message.get("user")
             vote = message.get("point")

@@ -3,36 +3,44 @@ import {
   CurrentTickerWrapper,
   TicketName, 
   PhaseName,
+  CancelTicketIcon,
   CurrentTicketStyled,
 } from "./CurrentTicket.styled";
-
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { AnimatePresence } from 'framer-motion';
 
 // Context
 import { RoomContext } from '../../pages/RoomPage/RoomPage';
+import { getUserFromLS } from "../../../util/localStorageUser";
 
 // Const
 import { LIST_VARIANTS } from "../../../styles/animations";
+import { EVENT_TYPES } from "../../../services/WebSocket";
 
 // Children
 import VoteValue from '../VoteValue/VoteValue';
-import { getUserFromLS } from '../../../util/localStorageUser';
 
 
 const CurrentTicket = () => {
-  const { room } = useContext(RoomContext);
+  const { room, publish } = useContext(RoomContext);
   const [selectedTicket, setSelectedTicket] = useState();
 
+  const _userIsAdmin = () => {
+    return getUserFromLS() === room.admin;
+  }
+
   const getSelectedState = value => {
-    const isAdmin = getUserFromLS() === room.admin;
-    return isAdmin
+    return _userIsAdmin()
       ? Object.values(room.votes).includes(value.toString())
       : value === selectedTicket;
   }
 
   const getHandleSelect = value => {
-    const isAdmin = getUserFromLS() === room.admin;
-    if (!isAdmin) return () => setSelectedTicket(value);
+    if (!_userIsAdmin()) return () => setSelectedTicket(value);
+  }
+
+  const handleCancelTicket = () => {
+    publish(EVENT_TYPES.ticket_cancelled);
   }
 
   return (
@@ -52,6 +60,7 @@ const CurrentTicket = () => {
           >
             [{room.phase}]
           </PhaseName>
+          {_userIsAdmin() && <CancelTicketIcon icon={faTimes} onClick={handleCancelTicket}/>}
         </TicketName>
       </AnimatePresence>
       <CurrentTicketStyled
